@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安裝施工費用試算表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-muted: #666;
+    --ink-light: #999;
+    --rule: #e0dbd3;
+    --bg: #f7f4ef;
+    --bg-card: #ffffff;
+    --accent: #1e3a5f;
+    --accent-light: #e8eef5;
+    --warn: #b04a00;
+    --warn-bg: #fff5ef;
+    --success: #1a5f3a;
+    --gold: #c8a84b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--accent);
+    padding: 36px 0 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .page-header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .page-header p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 1px;
+  }
+
+  .container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 24px 0 0;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--rule);
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .step.active .step-num { background: var(--accent); color: #fff; }
+  .step-name { font-size: 10px; color: var(--ink-light); letter-spacing: 0.5px; }
+  .step.active .step-name { color: var(--accent); }
+  .step-line { width: 40px; height: 1px; background: var(--rule); margin-bottom: 14px; }
+
+  /* Card */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header .label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .card-body { padding: 20px; }
+
+  /* City select */
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+
+  /* Fee display */
+  .fee-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .fee-item {
+    background: var(--accent-light);
+    border-radius: 3px;
+    padding: 12px 14px;
+  }
+  .fee-item .fi-label { font-size: 10px; color: var(--ink-muted); letter-spacing: 1px; margin-bottom: 4px; }
+  .fee-item .fi-val { font-size: 18px; font-weight: 500; color: var(--accent); font-family: 'Noto Serif TC', serif; }
+  .remote-note {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    font-size: 12px;
+    color: var(--warn);
+    line-height: 1.7;
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* Product categories */
+  .cat-block {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .cat-hdr {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px;
+    background: var(--bg-card);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .cat-hdr:hover { background: var(--bg); }
+  .cat-icon {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--rule);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .cat-hdr.has-items .cat-icon { background: var(--gold); }
+  .cat-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .cat-subtotal { font-size: 12px; color: var(--ink-muted); font-family: 'Noto Serif TC', serif; }
+  .cat-arrow {
+    font-size: 10px; color: var(--ink-light);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .cat-body { display: none; border-top: 1px solid var(--rule); }
+
+  .tier-bar {
+    padding: 8px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    font-size: 11px;
+    color: var(--ink-muted);
+    display: flex; align-items: center; gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tier-tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: var(--rule);
+    font-size: 10px;
+    color: var(--ink-muted);
+    transition: all 0.2s;
+  }
+  .tier-tag.active { background: var(--accent); color: #fff; }
+
+  .item-row {
+    display: flex; align-items: center;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--rule);
+    gap: 10px;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-info { flex: 1; min-width: 0; }
+  .item-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-unit-price { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .qty-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .qty-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--ink-muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .qty-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .qty-inp {
+    width: 44px;
+    text-align: center;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 4px;
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .qty-inp:focus { outline: none; border-color: var(--accent); }
+  .item-sub { font-size: 12px; min-width: 68px; text-align: right; color: var(--ink-light); font-family: 'Noto Serif TC', serif; }
+  .item-sub.has-val { color: var(--ink); font-weight: 500; }
+
+  /* Summary */
+  .summary-card {
+    background: var(--accent);
+    border-radius: 4px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+  .summary-card .s-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+  .summary-card .s-body { padding: 16px 20px; }
+  .breakdown-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .br-amt { font-family: 'Noto Serif TC', serif; }
+  .breakdown-row.base-fee { color: rgba(255,255,255,0.5); font-size: 12px; }
+  .grand-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .grand-label { font-size: 13px; color: rgba(255,255,255,0.8); letter-spacing: 1px; }
+  .grand-val { font-size: 28px; font-weight: 700; color: #fff; font-family: 'Noto Serif TC', serif; }
+  .grand-note { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; line-height: 1.7; text-align: right; }
+  .grand-placeholder { font-size: 14px; color: rgba(255,255,255,0.4); padding: 10px 0; text-align: center; }
+
+  .footnote {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--ink-light);
+    line-height: 2;
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 { font-size: 18px; }
+    .fee-grid { grid-template-columns: 1fr 1fr; }
+    .grand-val { font-size: 22px; }
+    .step-line { width: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>安裝施工費用試算表</h1>
+  <p>依序選擇施工縣市與商品數量，即時顯示預估費用</p>
+</div>
+
+<div class="container">
+
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">1</div>
+      <div class="step-name">施工縣市</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step2">
+      <div class="step-num">2</div>
+      <div class="step-name">選擇商品</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step3">
+      <div class="step-num">3</div>
+      <div class="step-name">費用明細</div>
+    </div>
+  </div>
+
+  <!-- Step 1: City -->
+  <div class="card">
+    <div class="card-header">
+      <span class="label">Step 1 &nbsp;·&nbsp; 施工縣市</span>
+    </div>
+    <div class="card-body">
+      <select id="citySelect" onchange="onCity()">
+        <option value="">請選擇縣市…</option>
+      </select>
+      <div id="feePanel" style="display:none;">
+        <div class="fee-grid">
+          <div class="fee-item">
+            <div class="fi-label">基本出車費</div>
+            <div class="fi-val" id="baseFeeVal">—</div>
+          </div>
+          <div class="fee-item">
+            <div class="fi-label">急件加收費</div>
+            <div class="fi-val" id="urgentFeeVal">—</div>
+          </div>
+        </div>
+        <div class="remote-note" id="remoteNote">
+          ⚠ 此縣市部分地區屬偏遠鄉鎮，若施工地點位於偏遠地區，費用需事先聯繫本公司確認，不在本試算範圍內。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Products -->
+  <div class="card">
+    <div class="card-header">
+      <span class="label">Step 2 &nbsp;·&nbsp; 施工商品與數量</span>
+    </div>
+    <div class="card-body" style="padding: 12px;">
+      <div id="catContainer"></div>
+    </div>
+  </div>
+
+  <!-- Step 3: Summary -->
+  <div class="summary-card">
+    <div class="s-header">Step 3 &nbsp;·&nbsp; 費用明細</div>
+    <div class="s-body">
+      <div id="breakdownArea">
+        <div class="grand-placeholder">請先選擇縣市與商品數量</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">
+    ＊ 此為預估費用，以實際派工單為準。<br>
+    ＊ 急件費為額外加收，是否需急件請直接洽詢。<br>
+    ＊ 偏遠地區、特殊地形或量體較大時，費用可能另計。
+  </div>
+
+</div>
+
+<script>
+const cityData = {
+  '臺北市':{base:5500,urgent:5000,remote:true},
+  '新北市':{base:5500,urgent:5000,remote:false},
+  '基隆市':{base:7000,urgent:5000,remote:true},
+  '桃園市':{base:4000,urgent:4500,remote:true},
+  '新竹縣':{base:3500,urgent:4500,remote:true},
+  '新竹市':{base:3500,urgent:4000,remote:false},
+  '苗栗縣':{base:2800,urgent:3500,remote:true},
+  '台中市':{base:2100,urgent:3000,remote:true},
+  '彰化縣':{base:2500,urgent:3000,remote:false},
+  '南投縣':{base:3500,urgent:3000,remote:true},
+  '南投市':{base:3000,urgent:3000,remote:false},
+  '雲林縣':{base:3500,urgent:3000,remote:true},
+  '嘉義市':{base:4000,urgent:4500,remote:true},
+  '台南市':{base:6000,urgent:4500,remote:true},
+  '高雄市':{base:7300,urgent:5000,remote:true},
+  '屏東縣':{base:15000,urgent:8000,remote:true},
+  '宜蘭縣':{base:12000,urgent:8000,remote:true},
+  '花蓮縣':{base:15000,urgent:8000,remote:false},
+  '台東縣':{base:18000,urgent:8000,remote:false},
+};
+
+const catDefs = [
+  {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面',
+   items:[
+    {key:'sg60',label:'SG60',prices:[1500,1200,1000]},
+    {key:'sg80',label:'SG80',prices:[1500,1200,1000]},
+    {key:'sg100',label:'SG100',prices:[1500,1200,1000]},
+    {key:'ssg60',label:'SSG60',prices:[1500,1200,1000]},
+    {key:'ssg80',label:'SSG80',prices:[1500,1200,1000]},
+    {key:'ssg100',label:'SSG100',prices:[1500,1200,1000]},
+    {key:'m-wall',label:'壁掛安裝（工）',prices:[300,250,200]},
+    {key:'m-yas',label:'錏管＋底座立桿（含料）',prices:[1800,1700,1600],unit:'組'},
+    {key:'m-yab',label:'錏管埋管（含料）',prices:[1800,1700,1600],unit:'組'},
+    {key:'m-gzs',label:'鍍鋅管＋底座立桿（含料）',prices:[2150,2050,1900],unit:'組'},
+    {key:'m-gzb',label:'鍍鋅管埋管（含料）',prices:[2150,2050,1900],unit:'組'},
+    {key:'m-tape',label:'黃黑反光貼紙（含料）',prices:[250,200,150],unit:'米'},
+  ]},
+  {key:'wheelstop',label:'車輪檔',tierBreaks:[50,200],tierLabels:['50顆以下','51–200顆','201顆以上'],unit:'顆',
+   items:[
+    {key:'ws-al',label:'鋁合金車輪檔',prices:[150,120,100]},
+    {key:'ws-pl',label:'塑膠車輪檔',prices:[150,120,100]},
+    {key:'ws-rb',label:'橡膠車輪擋',prices:[225,185,160]},
+    {key:'ws-pv',label:'PVC車輪檔',prices:[180,150,130]},
+    {key:'ws-as',label:'柏油路面加強',prices:[75,65,50]},
+    {key:'ws-r1',label:'一般車擋拆除',prices:[125,100,75]},
+    {key:'ws-r2',label:'螺絲隱藏車擋拆除',prices:[200,165,125]},
+  ]},
+  {key:'barrier',label:'防撞桿',tierBreaks:[50,150],tierLabels:['50支以下','51–150支','151支以上'],unit:'支',
+   items:[
+    {key:'br-pe',label:'PE防撞桿',prices:[150,125,100]},
+    {key:'br-ev',label:'EVA防撞桿',prices:[150,125,100]},
+    {key:'br-pu',label:'PU防撞桿',prices:[150,125,100]},
+    {key:'br-gd',label:'防護桿',prices:[200,165,140]},
+    {key:'br-ch',label:'塑膠鍊條',prices:[135,128,120],unit:'條'},
+    {key:'br-tw',label:'U型護欄（台製 100×30）',prices:[1350,1300,1220],unit:'個'},
+    {key:'br-cn',label:'U型護欄（陸製 100×30）',prices:[1180,1140,1090],unit:'個'},
+  ]},
+  {key:'speedbump',label:'減速墊',tierBreaks:[30,100],tierLabels:['15米以下','15–50米','50米以上'],unit:'塊',
+   items:[
+    {key:'sb-25',label:'橡膠 50×50×2.5cm',prices:[525,475,400]},
+    {key:'sb-35',label:'橡膠 50×50×3.5cm',prices:[525,475,400]},
+    {key:'sb-5', label:'橡膠 50×50×5cm', prices:[525,475,400]},
+    {key:'sb-rm',label:'舊減速墊回收',prices:[300,300,300],unit:'米',flat:true},
+  ]},
+  {key:'edgeguard',label:'護邊條',tierBreaks:[50,150],tierLabels:['50條以下','51–150條','151條以上'],unit:'條',
+   items:[
+    {key:'eg-pv',label:'PVC彩紋防撞條',prices:[150,120,100]},
+    {key:'eg-pu',label:'PU護邊條',prices:[120,100,100]},
+    {key:'eg-al',label:'螢光鋁邊條',prices:[150,120,100]},
+    {key:'eg-rb',label:'橡膠護邊條',prices:[150,120,100]},
+  ]},
+];
+
+const qty = {};
+
+function fmt(n){ return 'NT$ ' + Math.round(n).toLocaleString('zh-TW'); }
+function getTier(t,b){ return t<=b[0]?0:t<=b[1]?1:2; }
+
+function calcCat(cat){
+  let tierQty=0;
+  cat.items.forEach(it=>{ if(!it.flat) tierQty+=(qty[it.key]||0); });
+  const tier=getTier(tierQty,cat.tierBreaks);
+  let total=0;
+  cat.items.forEach(it=>{ total+=(qty[it.key]||0)*(it.flat?it.prices[0]:it.prices[tier]); });
+  return {total,tier,tierQty};
+}
+
+function recalc(){
+  catDefs.forEach(cat=>{
+    const {total,tier,tierQty}=calcCat(cat);
+
+    // update tier tags
+    cat.tierLabels.forEach((_,i)=>{
+      const el=document.getElementById(`tier-tag-${cat.key}-${i}`);
+      if(el) el.className='tier-tag'+(i===tier&&tierQty>0?' active':'');
+    });
+
+    const tierInfo=document.getElementById('tier-info-'+cat.key);
+    if(tierInfo){
+      if(tierQty>0){
+        const mLabel=cat.key==='speedbump'?`（${(tierQty*0.5).toFixed(1)} 米）`:'';
+        tierInfo.textContent=`已選 ${tierQty} ${cat.unit}${mLabel}`;
+      } else { tierInfo.textContent=''; }
+    }
+
+    cat.items.forEach(it=>{
+      const q=qty[it.key]||0;
+      const up=it.flat?it.prices[0]:it.prices[tier];
+      const unit=it.unit||cat.unit;
+      const upEl=document.getElementById('up-'+it.key);
+      if(upEl) upEl.textContent=`NT$${up.toLocaleString('zh-TW')} / ${unit}`;
+      const subEl=document.getElementById('sub-'+it.key);
+      const sub=q*up;
+      if(subEl){
+        subEl.textContent=sub>0?fmt(sub):'';
+        subEl.className='item-sub'+(sub>0?' has-val':'');
+      }
+    });
+
+    const catSubEl=document.getElementById('catsubtotal-'+cat.key);
+    if(catSubEl) catSubEl.textContent=total>0?fmt(total):'';
+    const hdrEl=document.getElementById('cathdr-'+cat.key);
+    if(hdrEl) hdrEl.className='cat-hdr'+(total>0?' has-items':'');
+  });
+
+  // summary
+  const cityKey=document.getElementById('citySelect').value;
+  const city=cityData[cityKey];
+  const baseFee=city?city.base:0;
+  const installTotal=catDefs.reduce((s,c)=>s+calcCat(c).total,0);
+  const grand=city?Math.max(installTotal,baseFee):installTotal;
+
+  const area=document.getElementById('breakdownArea');
+  const hasData=city&&(installTotal>0);
+
+  if(!city&&installTotal===0){
+    area.innerHTML='<div class="grand-placeholder">請先選擇縣市與商品數量</div>';
+    return;
+  }
+
+  let html='';
+  if(city) html+=`<div class="breakdown-row base-fee"><span>基本出車費（${cityKey}）</span><span class="br-amt">${fmt(baseFee)}</span></div>`;
+  catDefs.forEach(c=>{
+    const {total}=calcCat(c);
+    if(total>0) html+=`<div class="breakdown-row"><span>${c.label} 施工費</span><span class="br-amt">${fmt(total)}</span></div>`;
+  });
+  if(!city) html+=`<div class="breakdown-row"><span style="color:rgba(255,255,255,0.4)">尚未選擇縣市</span><span></span></div>`;
+
+  const noteText=!city?'請選擇施工縣市以計算最終費用':
+    installTotal===0?'請選擇需施工的商品與數量':
+    installTotal<baseFee?`施工費 ${fmt(installTotal)} 未達基本出車費，以出車費計`:
+    `施工費 ${fmt(installTotal)}，高於基本出車費 ${fmt(baseFee)}`;
+
+  html+=`<div class="grand-row">
+    <span class="grand-label">預估總費用</span>
+    <span class="grand-val">${grand>0?fmt(grand):'—'}</span>
+  </div>
+  <div class="grand-note">${noteText}</div>`;
+  area.innerHTML=html;
+
+  // update step indicators
+  document.getElementById('step1').className='step'+(city?' active':'');
+  document.getElementById('step2').className='step'+(installTotal>0?' active':'');
+  document.getElementById('step3').className='step'+(grand>0?' active':'');
+}
+
+function changeQty(key,delta){
+  qty[key]=Math.max(0,(qty[key]||0)+delta);
+  const inp=document.getElementById('inp-'+key);
+  if(inp) inp.value=qty[key];
+  recalc();
+}
+function inputQty(key,val){
+  qty[key]=Math.max(0,parseInt(val)||0);
+  recalc();
+}
+function toggleCat(key){
+  const body=document.getElementById('catbody-'+key);
+  const arrow=document.getElementById('arrow-'+key);
+  if(!body) return;
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  if(arrow) arrow.style.transform=open?'':'rotate(90deg)';
+}
+function onCity(){
+  const val=document.getElementById('citySelect').value;
+  const panel=document.getElementById('feePanel');
+  const remoteNote=document.getElementById('remoteNote');
+  if(val&&cityData[val]){
+    const d=cityData[val];
+    panel.style.display='block';
+    document.getElementById('baseFeeVal').textContent=fmt(d.base);
+    document.getElementById('urgentFeeVal').textContent=fmt(d.urgent);
+    remoteNote.style.display=d.remote?'block':'none';
+  } else { panel.style.display='none'; }
+  recalc();
+}
+
+// Build city select
+const sel=document.getElementById('citySelect');
+Object.keys(cityData).forEach(c=>{
+  const o=document.createElement('option');
+  o.value=c; o.textContent=c;
+  sel.appendChild(o);
+});
+
+// Build category blocks
+const container=document.getElementById('catContainer');
+catDefs.forEach(cat=>{
+  const section=document.createElement('div');
+  section.className='cat-block';
+
+  const hdr=document.createElement('div');
+  hdr.className='cat-hdr';
+  hdr.id='cathdr-'+cat.key;
+  hdr.onclick=()=>toggleCat(cat.key);
+  hdr.innerHTML=`
+    <div class="cat-icon"></div>
+    <div class="cat-name">${cat.label}</div>
+    <div class="cat-subtotal" id="catsubtotal-${cat.key}"></div>
+    <div class="cat-arrow" id="arrow-${cat.key}">&#9658;</div>
+  `;
+  section.appendChild(hdr);
+
+  const body=document.createElement('div');
+  body.className='cat-body';
+  body.id='catbody-'+cat.key;
+
+  const tierBar=document.createElement('div');
+  tierBar.className='tier-bar';
+  tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
+    cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('')+
+    `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
+  body.appendChild(tierBar);
+
+  cat.items.forEach(it=>{
+    const unit=it.unit||cat.unit;
+    const row=document.createElement('div');
+    row.className='item-row';
+    row.innerHTML=`
+      <div class="item-info">
+        <div class="item-name" title="${it.label}">${it.label}</div>
+        <div class="item-unit-price" id="up-${it.key}">NT$— / ${unit}</div>
+      </div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="changeQty('${it.key}',-1)">−</button>
+        <input class="qty-inp" id="inp-${it.key}" type="number" min="0" value="0"
+          oninput="inputQty('${it.key}',this.value)" onchange="inputQty('${it.key}',this.value)">
+        <button class="qty-btn" onclick="changeQty('${it.key}',1)">+</button>
+      </div>
+      <div class="item-sub" id="sub-${it.key}"></div>
+    `;
+    body.appendChild(row);
+  });
+
+  section.appendChild(body);
+  container.appendChild(section);
+});
+
+recalc();
+</script>
+</body>
+</html>
