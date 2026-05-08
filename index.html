@@ -1,317 +1,408 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安裝施工費用試算表 - 竣宇道安</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --accent: #1e3a5f;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --urgent: #dc2626; /* 醒目紅色 */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安裝施工費用試算表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-muted: #666;
+    --ink-light: #999;
+    --rule: #e0dbd3;
+    --bg: #f7f4ef;
+    --bg-card: #ffffff;
+    --accent: #1e3a5f;
+    --accent-light: #e8eef5;
+    --warn: #b04a00;
+    --warn-bg: #fff5ef;
+    --success: #1a5f3a;
+    --gold: #c8a84b;
+    /* --- 1. UI 優化：配色方案 A 變數 --- */
+    --alert-red-bg: #FFF5F5;
+    --alert-red-text: #C53030;
+    --alert-red-border: #FEB2B2;
+    --urgent-red: #dc2626; /* 新增：醒目紅色變數 */
+  }
 
-        * { box-sizing: border-box; font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    line-height: 1.6;
+    padding-bottom: 120px;
+    background-image: 
+      radial-gradient(circle at 2% 2%, rgba(200,168,75,0.03) 0%, transparent 20%),
+      radial-gradient(circle at 98% 98%, rgba(30,58,95,0.03) 0%, transparent 20%);
+    background-attachment: fixed;
+  }
 
-        .page-header {
-            background: var(--accent);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
+  /* Header 樣式 */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+  }
+  .header img {
+    display: block; margin: 0 auto 16px; height: 64px;
+    filter: brightness(0) invert(1); position: relative; z-index: 2;
+  }
+  .header h1 {
+    font-family: 'Noto Serif TC', serif; font-size: 26px; font-weight: 700;
+    letter-spacing: 3px; margin-bottom: 8px; position: relative; z-index: 2;
+  }
+  .header p { font-size: 14px; letter-spacing: 1px; opacity: 0.8; z-index: 2; position: relative; font-weight: 300; }
 
-        /* LOGO 置中與白色濾鏡 */
-        .page-header img {
-            display: block;
-            margin: 0 auto 12px;
-            height: 60px;
-            filter: brightness(0) invert(1);
-        }
+  .container { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
 
-        .page-header h1 { margin: 0; font-size: 1.5rem; }
-        .page-header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem; }
+  /* 條款區塊 */
+  .terms-box {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 12px rgba(30,58,95,0.08);
+  }
+  .terms-box h3 {
+    color: var(--accent); font-size: 16px; margin-bottom: 12px;
+    display: flex; align-items: center; border-bottom: 1px solid rgba(30,58,95,0.2); padding-bottom: 8px;
+  }
+  .terms-box h3::before { content: "💡"; margin-right: 8px; font-size: 18px; }
+  .terms-box ul { padding-left: 20px; }
+  .terms-box li { font-size: 14px; color: var(--ink-muted); margin-bottom: 6px; }
+  .terms-box strong { color: var(--accent); }
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+  /* 卡片與通用組件 */
+  .section-card {
+    background: var(--bg-card); border-radius: 16px; padding: 24px; margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid var(--rule);
+  }
+  .section-title {
+    font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center;
+  }
+  .section-title::before {
+    content: ""; display: inline-block; width: 4px; height: 18px;
+    background: var(--gold); margin-right: 12px; border-radius: 2px;
+  }
 
-        /* 藍框條款樣式 */
-        .terms-box {
-            background: #f0f7ff;
-            border: 2px solid #2563eb;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
-            font-size: 0.9rem;
-        }
-        .terms-box h3 { color: #2563eb; margin-top: 0; font-size: 1rem; border-bottom: 1px solid #2563eb; padding-bottom: 5px; }
-        .terms-box ul { padding-left: 20px; margin: 10px 0 0; }
+  select, .qty-inp {
+    font-family: inherit; font-size: 15px; color: var(--ink);
+  }
 
-        .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
-        .section-title { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; }
-        .section-title::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary); margin-right: 10px; border-radius: 2px; }
+  /* 類別摺疊樣式 */
+  .cat-item { margin-bottom: 12px; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; transition: 0.3s; }
+  .cat-header {
+    background: #fff; padding: 16px 20px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cat-header:hover { background: #fafafa; }
+  .cat-title { font-weight: 600; font-size: 15px; color: var(--ink); }
+  .cat-arrow { color: var(--ink-light); font-size: 10px; transition: 0.3s; }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+  .cat-body { padding: 0 20px 20px; border-top: 1px dashed var(--rule); }
 
-        /* 商品項目列表 */
-        .item-list { display: grid; gap: 12px; }
-        .item-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px; 
-            border: 1px solid #f1f5f9; 
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .item-info { flex: 1; }
-        .item-name { font-weight: 600; font-size: 1rem; display: block; }
-        
-        /* 價格與紅色視覺提醒 */
-        .item-price { font-size: 0.85rem; color: var(--secondary); }
-        .discount-label { color: var(--urgent); font-weight: bold; margin-left: 5px; animation: pulse 2s infinite; }
-        .hint-label { color: #ef4444; font-size: 0.75rem; display: block; margin-top: 2px; }
+  .tier-bar {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin: 16px 0; padding: 10px 14px; background: #f9f7f2; border-radius: 8px;
+  }
+  .tier-tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 4px;
+    background: #fff; border: 1px solid var(--rule); color: var(--ink-light);
+  }
+  .tier-tag.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
-        }
+  /* 品項列與視覺提醒樣式 */
+  .item-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid #f2f2f2;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-name { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .item-unit-price { font-size: 12px; color: var(--ink-light); }
+  
+  /* 視覺提醒：紅色標籤與提示 */
+  .discount-label { color: var(--urgent-red); font-weight: 700; margin-left: 6px; }
+  .hint-label { color: var(--urgent-red); font-size: 11px; display: block; margin-top: 4px; opacity: 0.8; font-weight: 500; }
 
-        .qty-controls { display: flex; align-items: center; gap: 10px; }
-        .btn-qty { 
-            width: 36px; height: 36px; border-radius: 50%; border: none; 
-            background: #f1f5f9; color: var(--accent); font-size: 1.2rem; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .qty-val { width: 40px; text-align: center; font-weight: 700; }
+  .qty-wrap { display: flex; align-items: center; background: #f0f0f0; border-radius: 24px; padding: 3px; }
+  .qty-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: #fff; color: var(--accent); font-size: 18px; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: 0.2s;
+  }
+  .qty-btn:active { transform: scale(0.9); background: #eee; }
+  .qty-inp {
+    width: 44px; border: none; background: transparent; text-align: center;
+    font-weight: 700; font-size: 15px; -moz-appearance: textfield;
+  }
+  .qty-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-        /* 急件加收費紅色樣式 */
-        .urgent-card { border: 2px solid var(--urgent); background: #fef2f2; }
-        .urgent-card .section-title { color: var(--urgent); }
-        .urgent-card .section-title::before { background: var(--urgent); }
+  /* 急件樣式 A 加強版 */
+  .urgent-card {
+    background: var(--alert-red-bg);
+    border: 2px solid var(--alert-red-border);
+    position: relative; overflow: hidden;
+  }
+  .urgent-card::before {
+    content: "URGENT"; position: absolute; top: 10px; right: -25px;
+    background: var(--alert-red-border); color: #fff; font-size: 10px;
+    font-weight: 900; padding: 2px 30px; transform: rotate(45deg); opacity: 0.5;
+  }
+  .urgent-title { color: var(--alert-red-text) !important; }
+  .urgent-title::before { background: var(--alert-red-text) !important; }
 
-        .total-panel { 
-            position: sticky; bottom: 20px; background: var(--accent); 
-            color: white; padding: 20px; border-radius: 12px; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
-        }
-        .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .grand-total { border-top: 1px solid rgba(255,255,255,0.2); pt: 10px; font-size: 1.3rem; font-weight: 800; color: #fbbf24; }
-    </style>
+  /* Footer 固定列 */
+  .footer-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--accent); color: #fff;
+    padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.15); z-index: 1000;
+  }
+  .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .total-label { font-size: 13px; opacity: 0.7; font-weight: 300; }
+  .total-val { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .final-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.15); }
+  .final-label { font-size: 18px; font-weight: 700; color: #fbbf24; }
+  .final-val { font-size: 28px; font-weight: 800; color: #fbbf24; font-variant-numeric: tabular-nums; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 22px; }
+    .final-val { font-size: 24px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="page-header">
-    <img src="價目表用LOGO.svg" alt="竣宇道安">
-    <h1>安裝施工費用試算表</h1>
-    <p>依據最新 2024 價格母檔即時試算</p>
+<div class="header">
+  <img src="價目表用LOGO.svg" alt="竣宇道安">
+  <h1>安裝施工費用試算表</h1>
+  <p>PROFESSIONAL INSTALLATION ESTIMATE</p>
 </div>
 
 <div class="container">
-    <div class="terms-box">
-        <h3>💡 專業施工說明與條款</h3>
-        <ul>
-            <li>本試算表價格已含基本施工安裝工費。</li>
-            <li><strong>派遣時間：</strong>以本公司排定之施工日期為主。如需指定日期或夜間施工，請另洽詢。</li>
-            <li><strong>特殊路面：</strong>柏油路面需植筋加強時，將依各品項單價加收費用。</li>
-            <li><strong>假日加成：</strong>週六、週日及國定假日施工，總施工費需額外加收 2,000 元。</li>
-        </ul>
-    </div>
+  <div class="terms-box">
+    <h3>專業施工說明與條款</h3>
+    <ul>
+      <li>本試算價格已含<strong>基本施工安裝工費</strong>。</li>
+      <li><strong>派遣時間：</strong>以本公司排定之施工日期為主。</li>
+      <li><strong>特殊路面：</strong>柏油路面需植筋加強時，將依各品項單價加收。</li>
+      <li><strong>假日加成：</strong>週六、週日及國定假日施工，總額額外加收 <strong>2,000 元</strong>。</li>
+    </ul>
+  </div>
 
-    <div class="card">
-        <div class="section-title">第一步：選擇施工區域</div>
-        <div class="form-group">
-            <label>施工縣市 (車馬費計算基準)</label>
-            <select id="location" onchange="updateAll()">
-                <optgroup label="北部地區 (不另收車馬費)">
-                    <option value="0">桃園市 / 新北市 / 台北市 (車馬費 $0)</option>
-                </optgroup>
-                <optgroup label="其他地區 (需收車馬費)">
-                    <option value="1000">新竹縣市 / 基隆市 (+$1,000)</option>
-                    <option value="2000">苗栗縣市 (+$2,000)</option>
-                    <option value="3000">台中市 / 宜蘭縣 (+$3,000)</option>
-                </optgroup>
-            </select>
-        </div>
-    </div>
+  <div class="section-card">
+    <div class="section-title">第一步：選擇施工區域</div>
+    <select id="loc-select" style="width:100%; padding:14px; border-radius:10px; border:1px solid var(--rule); appearance:none; background: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231e3a5f%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 14px center; background-size: 12px;" onchange="calculate()">
+      <option value="0">桃園市 / 台北市 / 新北市 (免收車馬費)</option>
+      <option value="1000">新竹縣市 / 基隆市 (+NT$ 1,000)</option>
+      <option value="2000">苗栗縣市 (+NT$ 2,000)</option>
+      <option value="3000">台中市 / 宜蘭縣 (+NT$ 3,000)</option>
+    </select>
+  </div>
 
-    <div id="product-sections"></div>
+  <div id="main-content"></div>
 
-    <div class="card urgent-card">
-        <div class="section-title">第三步：急件與日期需求</div>
-        <div class="form-group">
-            <label style="display: flex; align-items: center; cursor: pointer;">
-                <input type="checkbox" id="isUrgent" onchange="updateAll()" style="width: 20px; margin-right: 10px;">
-                指定日期 / 趕件施工 (加收 $2,000)
-            </label>
-            <p style="color: var(--urgent); font-size: 0.8rem; margin: 5px 0 0 30px;">※ 若未勾選，將由本公司安排鄰近施工日派員。</p>
-        </div>
-    </div>
+  <div class="section-card urgent-card">
+    <div class="section-title urgent-title">第三步：急件與指定需求</div>
+    <label style="display:flex; align-items:center; cursor:pointer;">
+      <input type="checkbox" id="urgent-chk" style="width:22px; height:22px; margin-right:12px; accent-color:var(--alert-red-text);" onchange="calculate()">
+      <span style="font-size:15px; font-weight:600; color:var(--alert-red-text);">指定日期 / 趕件施工 (額外加收 $2,000)</span>
+    </label>
+    <p style="font-size:12px; color:var(--ink-muted); margin-top:10px; margin-left:34px; line-height:1.4;">※ 若未勾選，本公司將依工程進度彈性安排鄰近施工日派員，恕不指定精確時段。</p>
+  </div>
+</div>
 
-    <div class="total-panel">
-        <div class="total-row"><span>施工項目合計：</span><span id="items-sum">$0</span></div>
-        <div class="total-row"><span>地區車馬費：</span><span id="travel-fee">$0</span></div>
-        <div id="urgent-fee-row" class="total-row" style="display:none;"><span>急件/指定日期費：</span><span>$2,000</span></div>
-        <div class="total-row grand-total"><span>預估總金額：</span><span id="final-total">$0</span></div>
-    </div>
+<div class="footer-bar">
+  <div class="total-row"><span class="total-label">施工項目小計</span><span class="total-val" id="sum-items">NT$ 0</span></div>
+  <div class="total-row"><span class="total-label">地區車馬費用</span><span class="total-val" id="sum-travel">NT$ 0</span></div>
+  <div class="total-row" id="sum-urgent-row" style="display:none;"><span class="total-label">急件/指定日期費</span><span class="total-val">NT$ 2,000</span></div>
+  <div class="total-row final-row"><span class="final-label">預估總金額</span><span class="final-val" id="sum-total">NT$ 0</span></div>
 </div>
 
 <script>
-    // 100% 參照價格母檔之最新數據
-    const catDefs = {
-        'A. 反射鏡系列': {
-            thresholds: [3, 10], // 3面(含)以下, 4-10面, 11面以上
-            items: [
-                { name: '60公分', prices: [1500, 1200, 1000] },
-                { name: '80公分', prices: [1500, 1200, 1000] },
-                { name: '100公分', prices: [1500, 1200, 1000] },
-                { name: '壁掛安裝', prices: [300, 250, 200] },
-                { name: '錏管+四方底座(立)(含料)', prices: [1800, 1700, 1600] },
-                { name: '錏管(埋)(含料)', prices: [1800, 1700, 1600] },
-                { name: '鍍鋅管+四方底座(立)(含料)', prices: [2150, 2050, 1900] },
-                { name: '鍍鋅管(埋)', prices: [2150, 2050, 1900] },
-                { name: '黃黑反光貼紙(含料)一米長', prices: [250, 200, 150] }
-            ]
-        },
-        'B. 車輪檔系列': {
-            thresholds: [50, 200], // 50(含)以下, 51-200, 201以上
-            items: [
-                { name: '鋁合金車輪檔', prices: [150, 120, 100] },
-                { name: '塑膠車輪檔', prices: [150, 120, 100] },
-                { name: '橡膠車輪擋', prices: [225, 185, 160] },
-                { name: 'PVC車輪檔', prices: [180, 150, 130] },
-                { name: '柏油路面加強', prices: [75, 65, 50] },
-                { name: '一般車擋拆除', prices: [125, 100, 75] },
-                { name: '螺絲隱藏車擋拆除', prices: [200, 165, 125] }
-            ]
-        },
-        'C. 防撞桿系列': {
-            thresholds: [50, 150],
-            items: [
-                { name: 'PE防撞桿', prices: [150, 125, 100] },
-                { name: 'EVA防撞桿', prices: [150, 125, 100] },
-                { name: 'PU防撞桿', prices: [150, 125, 100] },
-                { name: '防護桿', prices: [200, 165, 140] },
-                { name: '塑膠鍊條', prices: [135, 128, 120] },
-                { name: '台/100*30 U型護欄', prices: [1350, 1300, 1220] },
-                { name: '陸/100*30 U型護欄', prices: [1180, 1140, 1090] }
-            ]
-        },
-        'D. 減速墊系列': {
-            thresholds: [30, 100], // 15米(含)以下=30塊, 16-50米=31-100塊
-            items: [
-                { name: '橡膠 50*50*2.5CM', prices: [525, 475, 400] },
-                { name: '橡膠 50*50*3.5CM', prices: [525, 475, 400] },
-                { name: '橡膠 50*50*5CM', prices: [525, 475, 400] }
-            ]
-        },
-        'E. 護邊條系列': {
-            thresholds: [50, 150],
-            items: [
-                { name: 'PVC彩紋防撞條', prices: [150, 120, 100] },
-                { name: 'PU護邊條', prices: [120, 100, 100] },
-                { name: '螢光鋁邊條', prices: [150, 120, 100] },
-                { name: '橡膠護邊條', prices: [150, 120, 100] }
-            ]
+// 精準同步 2024 價格母檔數據
+const cats = [
+  {
+    key: 'mirror', label: 'A. 反射鏡系列', unit: '面',
+    thresholds: [3, 10], tierLabels: ['3面以下', '4-10面', '11面以上'],
+    items: [
+      { key: 'm60', label: '60公分', p: [1500, 1200, 1000] },
+      { key: 'm80', label: '80公分', p: [1500, 1200, 1000] },
+      { key: 'm100', label: '100公分', p: [1500, 1200, 1000] },
+      { key: 'm_wall', label: '壁掛安裝', p: [300, 250, 200] },
+      { key: 'm_pole_l', label: '錏管+四方底座 (立)(含料)', p: [1800, 1700, 1600] },
+      { key: 'm_pole_m', label: '錏管(埋)(含料)', p: [1800, 1700, 1600] },
+      { key: 'm_gal_l', label: '鍍鋅管+四方底座 (立)(含料)', p: [2150, 2050, 1900] },
+      { key: 'm_gal_m', label: '鍍鋅管(埋)', p: [2150, 2050, 1900] },
+      { key: 'm_tape', label: '黃黑反光貼紙(含料)一米長', p: [250, 200, 150], unit: '米' }
+    ]
+  },
+  {
+    key: 'stopper', label: 'B. 車輪檔系列', unit: '顆',
+    thresholds: [50, 200], tierLabels: ['50顆以下', '51-200顆', '201顆以上'],
+    items: [
+      { key: 's_alu', label: '鋁合金車輪檔', p: [150, 120, 100] },
+      { key: 's_pla', label: '塑膠車輪檔', p: [150, 120, 100] },
+      { key: 's_rub', label: '橡膠車輪擋', p: [225, 185, 160] },
+      { key: 's_pvc', label: 'PVC車輪檔', p: [180, 150, 130] },
+      { key: 's_fix', label: '柏油路面加強', p: [75, 65, 50] },
+      { key: 's_rem_n', label: '一般車擋拆除', p: [125, 100, 75] },
+      { key: 's_rem_h', label: '螺絲隱藏車擋拆除', p: [200, 165, 125] }
+    ]
+  },
+  {
+    key: 'pole', label: 'C. 防撞桿系列', unit: '支',
+    thresholds: [50, 150], tierLabels: ['50支以下', '51-150支', '151支以上'],
+    items: [
+      { key: 'p_pe', label: 'PE防撞桿', p: [150, 125, 100] },
+      { key: 'p_eva', label: 'EVA防撞桿', p: [150, 125, 100] },
+      { key: 'p_pu', label: 'PU防撞桿', p: [150, 125, 100] },
+      { key: 'p_guard', label: '防護桿', p: [200, 165, 140] },
+      { key: 'p_chain', label: '塑膠鍊條', p: [135, 128, 120], unit: '條' },
+      { key: 'p_u_tw', label: '台/100*30 U型護欄', p: [1350, 1300, 1220], unit: '個' },
+      { key: 'p_u_cn', label: '陸/100*30 U型護欄', p: [1180, 1140, 1090], unit: '個' }
+    ]
+  },
+  {
+    key: 'bump', label: 'D. 減速墊系列', unit: '塊',
+    thresholds: [30, 100], tierLabels: ['15米以下', '16-50米', '51米以上'],
+    items: [
+      { key: 'b_25', label: '橡膠 50*50*2.5CM', p: [525, 475, 400] },
+      { key: 'b_35', label: '橡膠 50*50*3.5CM', p: [525, 475, 400] },
+      { key: 'b_50', label: '橡膠 50*50*5CM', p: [525, 475, 400] }
+    ]
+  },
+  {
+    key: 'edge', label: 'E. 護邊條系列', unit: '條',
+    thresholds: [50, 150], tierLabels: ['50條以下', '51-150條', '151條以上'],
+    items: [
+      { key: 'e_pvc', label: 'PVC彩紋防撞條', p: [150, 120, 100] },
+      { key: 'e_pu', label: 'PU護邊條', p: [120, 100, 100] },
+      { key: 'e_alu', label: '螢光鋁邊條', p: [150, 120, 100] },
+      { key: 'e_rub', label: '橡膠護邊條', p: [150, 120, 100] }
+    ]
+  }
+];
+
+function render() {
+  const main = document.getElementById('main-content');
+  cats.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'cat-item';
+    section.innerHTML = `
+      <div class="cat-header" onclick="toggleCat('${cat.key}')">
+        <div class="cat-title">${cat.label}</div>
+        <div class="cat-arrow" id="arrow-${cat.key}">▼</div>
+      </div>
+      <div class="cat-body" id="catbody-${cat.key}" style="display:none;">
+        <div class="tier-bar">
+          <span style="color:var(--ink-light); font-size:11px;">費率分級：</span>
+          ${cat.tierLabels.map((l,i) => `<span class="tier-tag" id="tag-${cat.key}-${i}">${l}</span>`).join('')}
+        </div>
+        <div id="items-${cat.key}"></div>
+      </div>
+    `;
+    main.appendChild(section);
+
+    const itemBox = document.getElementById(`items-${cat.key}`);
+    cat.items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      const unitStr = it.unit || cat.unit;
+      row.innerHTML = `
+        <div class="item-info">
+          <div class="item-name">${it.label}</div>
+          <div class="item-unit-price" id="up-${it.key}">NT$ ${it.p[0]} / ${unitStr}</div>
+          <div class="hint-label" id="hint-${it.key}"></div>
+        </div>
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty('${it.key}',-1)">−</button>
+          <input class="qty-inp" id="inp-${it.key}" type="number" min="0" value="0" onchange="calculate()">
+          <button class="qty-btn" onclick="changeQty('${it.key}',1)">+</button>
+        </div>
+      `;
+      itemBox.appendChild(row);
+    });
+  });
+}
+
+function toggleCat(key) {
+  const body = document.getElementById('catbody-' + key);
+  const arrow = document.getElementById('arrow-' + key);
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  arrow.innerHTML = isHidden ? '▲' : '▼';
+}
+
+function changeQty(key, delta) {
+  const inp = document.getElementById('inp-' + key);
+  let v = parseInt(inp.value) || 0;
+  v = Math.max(0, v + delta);
+  inp.value = v;
+  calculate();
+}
+
+function calculate() {
+  let subtotal = 0;
+
+  cats.forEach(cat => {
+    cat.items.forEach(it => {
+      const val = parseInt(document.getElementById('inp-' + it.key).value) || 0;
+      const unitStr = it.unit || cat.unit;
+
+      // 修正後的核心邏輯：每個品項「獨立判定」級距
+      let tier = 0;
+      if (val > cat.thresholds[1]) tier = 2;
+      else if (val > cat.thresholds[0]) tier = 1;
+
+      const price = it.p[tier];
+      subtotal += val * price;
+
+      // 視覺提醒更新
+      const upEl = document.getElementById('up-' + it.key);
+      const hintEl = document.getElementById('hint-' + it.key);
+
+      if (val > 0 && tier > 0) {
+        upEl.innerHTML = `<span style="color:var(--urgent-red); font-weight:700;">NT$ ${price}</span> <span class="discount-label">[已享優惠價]</span>`;
+        hintEl.innerText = "";
+      } else {
+        upEl.innerHTML = `NT$ ${it.p[0]} / ${unitStr}`;
+        // 湊單提示邏輯（差 5 個內顯示）
+        if (val > 0 && val <= cat.thresholds[0]) {
+          const gap = cat.thresholds[0] + 1 - val;
+          hintEl.innerText = gap <= 5 ? `再加 ${gap} ${unitStr}即享優惠價` : "";
+        } else {
+          hintEl.innerText = "";
         }
-    };
+      }
+    });
+  });
 
-    const selections = {};
+  const travel = parseInt(document.getElementById('loc-select').value);
+  const urgent = document.getElementById('urgent-chk').checked ? 2000 : 0;
+  const total = subtotal + travel + urgent;
 
-    function init() {
-        const wrapper = document.getElementById('product-sections');
-        for (const [catName, config] of Object.entries(catDefs)) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `<div class="section-title">${catName}</div><div class="item-list" id="list-${catName}"></div>`;
-            wrapper.appendChild(card);
-            
-            const list = document.getElementById(`list-${catName}`);
-            config.items.forEach(item => {
-                const itemKey = `${catName}-${item.name}`;
-                selections[itemKey] = 0;
-                
-                const row = document.createElement('div');
-                row.className = 'item-row';
-                row.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-name">${item.name}</span>
-                        <span class="item-price" id="price-display-${itemKey}">單價 $${item.prices[0]}</span>
-                        <span id="hint-${itemKey}" class="hint-label"></span>
-                    </div>
-                    <div class="qty-controls">
-                        <button class="btn-qty" onclick="changeQty('${itemKey}', -1)">-</button>
-                        <span class="qty-val" id="qty-${itemKey}">0</span>
-                        <button class="btn-qty" onclick="changeQty('${itemKey}', 1)">+</button>
-                    </div>
-                `;
-                list.appendChild(row);
-            });
-        }
-    }
+  document.getElementById('sum-items').innerText = `NT$ ${subtotal.toLocaleString()}`;
+  document.getElementById('sum-travel').innerText = `NT$ ${travel.toLocaleString()}`;
+  document.getElementById('sum-urgent-row').style.display = urgent > 0 ? 'flex' : 'none';
+  document.getElementById('sum-total').innerText = `NT$ ${total.toLocaleString()}`;
+}
 
-    function changeQty(key, delta) {
-        selections[key] = Math.max(0, selections[key] + delta);
-        document.getElementById(`qty-${key}`).innerText = selections[key];
-        updateAll();
-    }
-
-    function updateAll() {
-        let itemsSum = 0;
-
-        for (const [catName, config] of Object.entries(catDefs)) {
-            config.items.forEach(item => {
-                const key = `${catName}-${item.name}`;
-                const qty = selections[key];
-                
-                // 獨立計價邏輯：依據單一品項數量判斷級距
-                let tier = 0;
-                if (qty > config.thresholds[1]) tier = 2;
-                else if (qty > config.thresholds[0]) tier = 1;
-                
-                const currentPrice = item.prices[tier];
-                itemsSum += qty * currentPrice;
-
-                // 視覺提醒：紅色 [已享優惠價]
-                const priceDisp = document.getElementById(`price-display-${key}`);
-                const hintDisp = document.getElementById(`hint-${key}`);
-                
-                if (qty > 0 && tier > 0) {
-                    priceDisp.innerHTML = `單價 <span style="color:var(--urgent); font-weight:bold;">$${currentPrice}</span> <span class="discount-label">[已享優惠價]</span>`;
-                    hintDisp.innerText = "";
-                } else if (qty > 0 && qty <= config.thresholds[0]) {
-                    priceDisp.innerText = `單價 $${item.prices[0]}`;
-                    const need = config.thresholds[0] + 1 - qty;
-                    if (need <= 5) {
-                        hintDisp.innerText = `再加 ${need} 單位即享優惠價`;
-                    } else {
-                        hintDisp.innerText = "";
-                    }
-                } else {
-                    priceDisp.innerText = `單價 $${item.prices[0]}`;
-                    hintDisp.innerText = "";
-                }
-            });
-        }
-
-        const travelFee = parseInt(document.getElementById('location').value);
-        const isUrgent = document.getElementById('isUrgent').checked;
-        const urgentFee = isUrgent ? 2000 : 0;
-
-        document.getElementById('items-sum').innerText = `$${itemsSum.toLocaleString()}`;
-        document.getElementById('travel-fee').innerText = `$${travelFee.toLocaleString()}`;
-        document.getElementById('urgent-fee-row').style.display = isUrgent ? 'flex' : 'none';
-        document.getElementById('final-total').innerText = `$${(itemsSum + travelFee + urgentFee).toLocaleString()}`;
-    }
-
-    init();
+window.onload = () => {
+  render();
+  calculate();
+};
 </script>
-
 </body>
 </html>
