@@ -1,760 +1,317 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>安裝施工費用試算表</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink: #1a1a1a;
-    --ink-muted: #666;
-    --ink-light: #999;
-    --rule: #e0dbd3;
-    --bg: #f7f4ef;
-    --bg-card: #ffffff;
-    --accent: #1e3a5f;
-    --accent-light: #e8eef5;
-    --warn: #b04a00;
-    --warn-bg: #fff5ef;
-    --success: #1a5f3a;
-    --gold: #c8a84b;
-    /* --- 1. UI 優化：配色方案 A 變數 --- */
-    --alert-red-bg: #FFF5F5;
-    --alert-red-text: #C53030;
-    --alert-red-border: #FEB2B2;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安裝施工費用試算表 - 竣宇道安</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --accent: #1e3a5f;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --urgent: #dc2626; /* 醒目紅色 */
+        }
 
-  /* Header */
-  .page-header {
-    background: var(--accent);
-    padding: 36px 0 28px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .page-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-  .page-header h1 {
-    font-family: 'Noto Serif TC', serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 3px;
-    margin-bottom: 6px;
-  }
-  .page-header p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    letter-spacing: 1px;
-  }
+        * { box-sizing: border-box; font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
 
-  .container {
-    max-width: 740px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
+        .page-header {
+            background: var(--accent);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
 
-  /* Step indicator */
-  .steps {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 24px 0 0;
-  }
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .step-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--rule);
-    color: var(--ink-muted);
-    font-size: 12px;
-    font-weight: 500;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-  }
-  .step.active .step-num { background: var(--accent); color: #fff; }
-  .step-name { font-size: 10px; color: var(--ink-light); letter-spacing: 0.5px; }
-  .step.active .step-name { color: var(--accent); }
-  .step-line { width: 40px; height: 1px; background: var(--rule); margin-bottom: 14px; }
+        /* LOGO 置中與白色濾鏡 */
+        .page-header img {
+            display: block;
+            margin: 0 auto 12px;
+            height: 60px;
+            filter: brightness(0) invert(1);
+        }
 
-  /* Card */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    margin-top: 20px;
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--rule);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .card-header .label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    color: var(--accent);
-    text-transform: uppercase;
-    flex: 1;
-  }
-  .card-body { padding: 20px; }
+        .page-header h1 { margin: 0; font-size: 1.5rem; }
+        .page-header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem; }
 
-  /* City select container */
-  .select-container {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  .select-item {
-    flex: 1;
-    min-width: 200px;
-  }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
 
-  select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    background: var(--bg);
-    font-family: 'Noto Sans TC', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    cursor: pointer;
-  }
-  select:focus { outline: none; border-color: var(--accent); }
+        /* 藍框條款樣式 */
+        .terms-box {
+            background: #f0f7ff;
+            border: 2px solid #2563eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        .terms-box h3 { color: #2563eb; margin-top: 0; font-size: 1rem; border-bottom: 1px solid #2563eb; padding-bottom: 5px; }
+        .terms-box ul { padding-left: 20px; margin: 10px 0 0; }
 
-  /* Fee display */
-  .fee-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  .fee-item {
-    background: var(--accent-light);
-    border-radius: 3px;
-    padding: 12px 14px;
-  }
-  
-  /* --- 1. UI 優化：急件加收費配色方案 A --- */
-  .fee-item.urgent {
-    background-color: var(--alert-red-bg) !important;
-    border: 1px solid var(--alert-red-border) !important;
-  }
-  .fee-item.urgent .fi-val {
-    color: var(--alert-red-text) !important;
-  }
+        .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
+        .section-title { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; }
+        .section-title::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--primary); margin-right: 10px; border-radius: 2px; }
 
-  .fee-item .fi-label { font-size: 10px; color: var(--ink-muted); letter-spacing: 1px; margin-bottom: 4px; }
-  .fee-item .fi-val { font-size: 18px; font-weight: 500; color: var(--accent); font-family: 'Noto Serif TC', serif; }
-  .remote-note {
-    display: none;
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: var(--warn-bg);
-    border-left: 3px solid var(--warn);
-    font-size: 12px;
-    color: var(--warn);
-    line-height: 1.7;
-    border-radius: 0 3px 3px 0;
-  }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
 
-  /* --- 1. 專業視覺化：藍框服務條款樣式 --- */
-  .service-notes {
-    background-color: #f8f9fa;
-    border: 2px solid #3182ce;
-    padding: 16px;
-    border-radius: 4px;
-    margin-top: 16px;
-    text-align: left;
-  }
-  .service-notes h3 {
-    font-size: 14px;
-    color: #2c5282;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #bee3f8;
-    padding-bottom: 6px;
-  }
-  .service-notes ul { list-style: none; padding: 0; }
-  .service-notes li { 
-    margin-bottom: 8px; 
-    line-height: 1.6; 
-    font-size: 12px; 
-    color: var(--ink-muted);
-    display: flex; 
-    align-items: flex-start;
-  }
-  .service-notes li strong { color: var(--ink); margin-right: 4px; white-space: nowrap; }
+        /* 商品項目列表 */
+        .item-list { display: grid; gap: 12px; }
+        .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px; 
+            border: 1px solid #f1f5f9; 
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 600; font-size: 1rem; display: block; }
+        
+        /* 價格與紅色視覺提醒 */
+        .item-price { font-size: 0.85rem; color: var(--secondary); }
+        .discount-label { color: var(--urgent); font-weight: bold; margin-left: 5px; animation: pulse 2s infinite; }
+        .hint-label { color: #ef4444; font-size: 0.75rem; display: block; margin-top: 2px; }
 
-  /* Product categories */
-  .cat-block {
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    margin-top: 10px;
-    overflow: hidden;
-  }
-  .cat-hdr {
-    display: flex; align-items: center; gap: 12px;
-    padding: 13px 16px;
-    background: var(--bg-card);
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s;
-  }
-  .cat-hdr:hover { background: var(--bg); }
-  .cat-icon {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--rule);
-    flex-shrink: 0;
-    transition: background 0.2s;
-  }
-  .cat-hdr.has-items .cat-icon { background: var(--gold); }
-  .cat-name { font-size: 14px; font-weight: 500; flex: 1; }
-  .cat-subtotal { font-size: 12px; color: var(--ink-muted); font-family: 'Noto Serif TC', serif; }
-  .cat-arrow {
-    font-size: 10px; color: var(--ink-light);
-    transition: transform 0.2s;
-    flex-shrink: 0;
-  }
-  .cat-body { display: none; border-top: 1px solid var(--rule); }
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
 
-  .tier-bar {
-    padding: 8px 16px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--rule);
-    font-size: 11px;
-    color: var(--ink-muted);
-    display: flex; align-items: center; gap: 6px;
-    flex-wrap: wrap;
-  }
-  .tier-tag {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 10px;
-    background: var(--rule);
-    font-size: 10px;
-    color: var(--ink-muted);
-    transition: all 0.2s;
-  }
-  .tier-tag.active { background: var(--accent); color: #fff; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .btn-qty { 
+            width: 36px; height: 36px; border-radius: 50%; border: none; 
+            background: #f1f5f9; color: var(--accent); font-size: 1.2rem; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .qty-val { width: 40px; text-align: center; font-weight: 700; }
 
-  .item-row {
-    display: flex; align-items: center;
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--rule);
-    gap: 10px;
-  }
-  .item-row:last-child { border-bottom: none; }
-  .item-info { flex: 1; min-width: 0; }
-  .item-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item-unit-price { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
-  .qty-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .qty-btn {
-    width: 28px; height: 28px;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 16px;
-    color: var(--ink-muted);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-    line-height: 1;
-  }
-  .qty-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-  .qty-inp {
-    width: 44px;
-    text-align: center;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 4px;
-    font-size: 13px;
-    font-family: 'Noto Sans TC', sans-serif;
-  }
-  .qty-inp:focus { outline: none; border-color: var(--accent); }
-  .item-sub { font-size: 12px; min-width: 68px; text-align: right; color: var(--ink-light); font-family: 'Noto Serif TC', serif; }
-  .item-sub.has-val { color: var(--ink); font-weight: 500; }
+        /* 急件加收費紅色樣式 */
+        .urgent-card { border: 2px solid var(--urgent); background: #fef2f2; }
+        .urgent-card .section-title { color: var(--urgent); }
+        .urgent-card .section-title::before { background: var(--urgent); }
 
-  /* Summary */
-  .summary-card {
-    background: var(--accent);
-    border-radius: 4px;
-    margin-top: 20px;
-    overflow: hidden;
-  }
-  .summary-card .s-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.6);
-    text-transform: uppercase;
-  }
-  .summary-card .s-body { padding: 16px 20px; }
-  .breakdown-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 5px 0;
-    font-size: 13px;
-    color: rgba(255,255,255,0.75);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .breakdown-row:last-child { border-bottom: none; }
-  .breakdown-row .br-amt { font-family: 'Noto Serif TC', serif; }
-  .breakdown-row.base-fee { color: rgba(255,255,255,0.5); font-size: 12px; }
-  .grand-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.2);
-  }
-  .grand-label { font-size: 13px; color: rgba(255,255,255,0.8); letter-spacing: 1px; }
-  .grand-val { font-size: 28px; font-weight: 700; color: #fff; font-family: 'Noto Serif TC', serif; }
-  .grand-note { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; line-height: 1.7; text-align: right; }
-  .grand-placeholder { font-size: 14px; color: rgba(255,255,255,0.4); padding: 10px 0; text-align: center; }
-
-  .footnote {
-    margin-top: 16px;
-    padding: 14px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    font-size: 11px;
-    color: var(--ink-light);
-    line-height: 2;
-  }
-
-  @media (max-width: 480px) {
-    .page-header h1 { font-size: 18px; }
-    .fee-grid { grid-template-columns: 1fr 1fr; }
-    .grand-val { font-size: 22px; }
-    .step-line { width: 24px; }
-    .select-container { flex-direction: column; }
-  }
-</style>
+        .total-panel { 
+            position: sticky; bottom: 20px; background: var(--accent); 
+            color: white; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+        }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .grand-total { border-top: 1px solid rgba(255,255,255,0.2); pt: 10px; font-size: 1.3rem; font-weight: 800; color: #fbbf24; }
+    </style>
 </head>
 <body>
 
 <div class="page-header">
-  <img src="價目表用LOGO.svg" alt="竣宇道安科技有限公司" 
-     style="display: block; margin: 10px auto; height: 60px; filter: brightness(0) invert(1);">
-  
-  <h1>安裝施工費用試算表</h1>
-  <p>依序選擇施工縣市與商品數量，即時顯示預估費用</p>
+    <img src="價目表用LOGO.svg" alt="竣宇道安">
+    <h1>安裝施工費用試算表</h1>
+    <p>依據最新 2024 價格母檔即時試算</p>
 </div>
 
 <div class="container">
+    <div class="terms-box">
+        <h3>💡 專業施工說明與條款</h3>
+        <ul>
+            <li>本試算表價格已含基本施工安裝工費。</li>
+            <li><strong>派遣時間：</strong>以本公司排定之施工日期為主。如需指定日期或夜間施工，請另洽詢。</li>
+            <li><strong>特殊路面：</strong>柏油路面需植筋加強時，將依各品項單價加收費用。</li>
+            <li><strong>假日加成：</strong>週六、週日及國定假日施工，總施工費需額外加收 2,000 元。</li>
+        </ul>
+    </div>
 
-  <div class="steps">
-    <div class="step active" id="step1">
-      <div class="step-num">1</div>
-      <div class="step-name">施工縣市</div>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step2">
-      <div class="step-num">2</div>
-      <div class="step-name">選擇商品</div>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step3">
-      <div class="step-num">3</div>
-      <div class="step-name">費用明細</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <span class="label">Step 1 &nbsp;·&nbsp; 施工地點</span>
-    </div>
-    <div class="card-body">
-      <div class="select-container">
-        <div class="select-item">
-          <select id="citySelect" onchange="onCityChange()">
-            <option value="">請選擇縣市…</option>
-          </select>
+    <div class="card">
+        <div class="section-title">第一步：選擇施工區域</div>
+        <div class="form-group">
+            <label>施工縣市 (車馬費計算基準)</label>
+            <select id="location" onchange="updateAll()">
+                <optgroup label="北部地區 (不另收車馬費)">
+                    <option value="0">桃園市 / 新北市 / 台北市 (車馬費 $0)</option>
+                </optgroup>
+                <optgroup label="其他地區 (需收車馬費)">
+                    <option value="1000">新竹縣市 / 基隆市 (+$1,000)</option>
+                    <option value="2000">苗栗縣市 (+$2,000)</option>
+                    <option value="3000">台中市 / 宜蘭縣 (+$3,000)</option>
+                </optgroup>
+            </select>
         </div>
-        <div class="select-item">
-          <select id="districtSelect" onchange="onDistrictChange()">
-            <option value="">請先選擇縣市…</option>
-          </select>
-        </div>
-      </div>
-      <div id="feePanel" style="display:none;">
-        <div class="fee-grid">
-          <div class="fee-item">
-            <div class="fi-label">基本出車費</div>
-            <div class="fi-val" id="baseFeeVal">—</div>
-          </div>
-          <div class="fee-item urgent">
-            <div class="fi-label">急件加收費</div>
-            <div class="fi-val" id="urgentFeeVal">—</div>
-          </div>
-        </div>
-        <div class="remote-note" id="remoteNote">
-          ⚠ 此地區可能為偏遠地區，需與司機確認是否加收費用，估價僅供參考，詳細報價請向我方再次確認。
-        </div>
-
-        <div class="service-notes">
-          <h3>【施工服務說明】</h3>
-          <ul>
-            <li><strong>● 一般派遣：</strong>自收款次日起算，3 個工作日內確認施工行程，並於 12 個工作日內完成施工。</li>
-            <li><strong>● 急件處理：</strong>如需緊急施工，我方將協助協調廠商進場時間。若經確認可配合客戶指定時間，總費用將以「基本出車費 + 急件加收費」計收。</li>
-            <li><strong>● 標準服務時間：</strong>平日（週一至週五）09:30 - 18:30。</li>
-            <li><strong>● 非工作日加費：</strong>如要求於週末或國定假日施工，經確認可配合後，每趟次將額外酌收 NT$ 1,000 派遣費用。</li>
-          </ul>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-header">
-      <span class="label">Step 2 &nbsp;·&nbsp; 施工商品與數量</span>
+    <div id="product-sections"></div>
+
+    <div class="card urgent-card">
+        <div class="section-title">第三步：急件與日期需求</div>
+        <div class="form-group">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="checkbox" id="isUrgent" onchange="updateAll()" style="width: 20px; margin-right: 10px;">
+                指定日期 / 趕件施工 (加收 $2,000)
+            </label>
+            <p style="color: var(--urgent); font-size: 0.8rem; margin: 5px 0 0 30px;">※ 若未勾選，將由本公司安排鄰近施工日派員。</p>
+        </div>
     </div>
-    <div class="card-body" style="padding: 12px;">
-      <div id="catContainer"></div>
+
+    <div class="total-panel">
+        <div class="total-row"><span>施工項目合計：</span><span id="items-sum">$0</span></div>
+        <div class="total-row"><span>地區車馬費：</span><span id="travel-fee">$0</span></div>
+        <div id="urgent-fee-row" class="total-row" style="display:none;"><span>急件/指定日期費：</span><span>$2,000</span></div>
+        <div class="total-row grand-total"><span>預估總金額：</span><span id="final-total">$0</span></div>
     </div>
-  </div>
-
-  <div class="summary-card">
-    <div class="s-header">Step 3 &nbsp;·&nbsp; 費用明細</div>
-    <div class="s-body">
-      <div id="breakdownArea">
-        <div class="grand-placeholder">請先選擇縣市與商品數量</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footnote">
-    ＊ 此為預估費用，以實際派工單為準。<br>
-    ＊ 急件費為額外加收，是否需急件請直接洽詢。<br>
-    ＊ 偏遠地區、特殊地形或量體較大時，費用可能另計。
-  </div>
-
 </div>
 
 <script>
-// 以下保留原有 index_updated.html 所有的資料庫與試算邏輯
-const cityData = {
-  '臺北市':{base:5500,urgent:5000},
-  '新北市':{base:5500,urgent:5000},
-  '基隆市':{base:7000,urgent:5000},
-  '桃園市':{base:4000,urgent:4500},
-  '新竹縣':{base:3500,urgent:4500},
-  '新竹市':{base:3500,urgent:4000},
-  '苗栗縣':{base:2800,urgent:3500},
-  '臺中市':{base:2100,urgent:3000},
-  '彰化縣':{base:2500,urgent:3000},
-  '南投縣':{base:3500,urgent:3000},
-  '雲林縣':{base:3500,urgent:3000},
-  '嘉義市':{base:4000,urgent:4500},
-  '嘉義縣':{base:4000,urgent:4500},
-  '臺南市':{base:6000,urgent:4500},
-  '高雄市':{base:7300,urgent:5000},
-  '屏東縣':{base:15000,urgent:8000},
-  '宜蘭縣':{base:12000,urgent:8000},
-  '花蓮縣':{base:15000,urgent:8000},
-  '臺東縣':{base:18000,urgent:8000}
-};
+    // 100% 參照價格母檔之最新數據
+    const catDefs = {
+        'A. 反射鏡系列': {
+            thresholds: [3, 10], // 3面(含)以下, 4-10面, 11面以上
+            items: [
+                { name: '60公分', prices: [1500, 1200, 1000] },
+                { name: '80公分', prices: [1500, 1200, 1000] },
+                { name: '100公分', prices: [1500, 1200, 1000] },
+                { name: '壁掛安裝', prices: [300, 250, 200] },
+                { name: '錏管+四方底座(立)(含料)', prices: [1800, 1700, 1600] },
+                { name: '錏管(埋)(含料)', prices: [1800, 1700, 1600] },
+                { name: '鍍鋅管+四方底座(立)(含料)', prices: [2150, 2050, 1900] },
+                { name: '鍍鋅管(埋)', prices: [2150, 2050, 1900] },
+                { name: '黃黑反光貼紙(含料)一米長', prices: [250, 200, 150] }
+            ]
+        },
+        'B. 車輪檔系列': {
+            thresholds: [50, 200], // 50(含)以下, 51-200, 201以上
+            items: [
+                { name: '鋁合金車輪檔', prices: [150, 120, 100] },
+                { name: '塑膠車輪檔', prices: [150, 120, 100] },
+                { name: '橡膠車輪擋', prices: [225, 185, 160] },
+                { name: 'PVC車輪檔', prices: [180, 150, 130] },
+                { name: '柏油路面加強', prices: [75, 65, 50] },
+                { name: '一般車擋拆除', prices: [125, 100, 75] },
+                { name: '螺絲隱藏車擋拆除', prices: [200, 165, 125] }
+            ]
+        },
+        'C. 防撞桿系列': {
+            thresholds: [50, 150],
+            items: [
+                { name: 'PE防撞桿', prices: [150, 125, 100] },
+                { name: 'EVA防撞桿', prices: [150, 125, 100] },
+                { name: 'PU防撞桿', prices: [150, 125, 100] },
+                { name: '防護桿', prices: [200, 165, 140] },
+                { name: '塑膠鍊條', prices: [135, 128, 120] },
+                { name: '台/100*30 U型護欄', prices: [1350, 1300, 1220] },
+                { name: '陸/100*30 U型護欄', prices: [1180, 1140, 1090] }
+            ]
+        },
+        'D. 減速墊系列': {
+            thresholds: [30, 100], // 15米(含)以下=30塊, 16-50米=31-100塊
+            items: [
+                { name: '橡膠 50*50*2.5CM', prices: [525, 475, 400] },
+                { name: '橡膠 50*50*3.5CM', prices: [525, 475, 400] },
+                { name: '橡膠 50*50*5CM', prices: [525, 475, 400] }
+            ]
+        },
+        'E. 護邊條系列': {
+            thresholds: [50, 150],
+            items: [
+                { name: 'PVC彩紋防撞條', prices: [150, 120, 100] },
+                { name: 'PU護邊條', prices: [120, 100, 100] },
+                { name: '螢光鋁邊條', prices: [150, 120, 100] },
+                { name: '橡膠護邊條', prices: [150, 120, 100] }
+            ]
+        }
+    };
 
-const districtList = {"基隆市": ["仁愛區", "信義區", "中正區", "中山區", "安樂區", "暖暖區", "七堵區"], "臺北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"], "新北市": ["板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "樹林區", "鶯歌區", "三峽區", "淡水區", "汐止區", "瑞芳區", "土城區", "蘆洲區", "五股區", "泰山區", "林口區", "深坑區", "石碇區", "坪林區", "三芝區", "石門區", "八里區", "平溪區", "雙溪區", "貢寮區", "金山區", "萬里區", "烏來區"], "桃園市": ["桃園區", "中壢區", "大溪區", "楊梅區", "蘆竹區", "大園區", "龜山區", "八德區", "龍潭區", "平鎮區", "新屋區", "觀音區", "復興區"], "新竹市": ["東區", "北區", "香山區"], "新竹縣": ["竹北市", "竹東鎮", "新埔鎮", "關西鎮", "湖口鄉", "新豐鄉", "芎林鄉", "橫山鄉", "北埔鄉", "寶山鄉", "峨眉鄉", "尖石鄉", "五峰鄉"], "苗栗縣": ["苗栗市", "頭份市", "竹南鎮", "後龍鎮", "通霄鎮", "苑裡鎮", "卓蘭鎮", "造橋鄉", "西湖鄉", "頭屋鄉", "公館鄉", "銅鑼鄉", "三義鄉", "大湖鄉", "獅潭鄉", "三灣鄉", "南庄鄉", "泰安鄉"], "臺中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "太平區", "大里區", "霧峰區", "烏日區", "豐原區", "後里區", "石岡區", "東勢區", "和平區", "新社區", "潭子區", "大雅區", "神岡區", "大肚區", "龍井區", "沙鹿區", "梧棲區", "清水區", "大甲區", "外埔區", "大安區"], "彰化縣": ["彰化市", "員林市", "和美鎮", "鹿港鎮", "溪湖鎮", "二林鎮", "田中鎮", "北斗鎮", "花壇鄉", "芬園鄉", "大村鄉", "永靖鄉", "伸港鄉", "線西鄉", "福興鄉", "秀水鄉", "埔心鄉", "埔鹽鄉", "大城鄉", "芳苑鄉", "竹塘鄉", "溪州鄉", "埤頭鄉", "二水鄉", "田尾鄉", "社頭鄉"], "南投縣": ["南投市", "埔里鎮", "草屯鎮", "竹山鎮", "集集鎮", "名間鄉", "鹿谷鄉", "中寮鄉", "魚池鄉", "國姓鄉", "水里鄉", "信義鄉", "仁愛鄉"], "雲林縣": ["斗六市", "斗南鎮", "虎尾鎮", "西螺鎮", "土庫鎮", "北港鎮", "古坑鄉", "大埤鄉", "莿桐鄉", "林內鄉", "二崙鄉", "崙背鄉", "麥寮鄉", "東勢鄉", "褒忠鄉", "臺西鄉", "元長鄉", "四湖鄉", "口湖鄉", "水林鄉"], "嘉義市": ["東區", "西區"], "嘉義縣": ["太保市", "朴子市", "布袋鎮", "大林鎮", "民雄鄉", "溪口鄉", "新港鄉", "六腳鄉", "東石鄉", "義竹鄉", "鹿草鄉", "水上鄉", "中埔鄉", "竹崎鄉", "梅山鄉", "番路鄉", "大埔鄉", "阿里山鄉"], "臺南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "歸仁區", "新化區", "左鎮區", "玉井區", "楠西區", "南化區", "仁德區", "關廟區", "龍崎區", "官田區", "麻豆區", "佳里區", "西港區", "七股區", "將軍區", "北門區", "新營區", "後壁區", "白河區", "東山區", "六甲區", "下營區", "柳營區", "鹽水區", "善化區", "大內區", "山上區", "新市區", "安定區", "左鎮區"], "高雄市": ["楠梓區", "左營區", "鼓山區", "三民區", "鹽埕區", "前金區", "新興區", "苓雅區", "前鎮區", "旗津區", "小港區", "鳳山區", "大寮區", "鳥松區", "林園區", "仁武區", "大社區", "大樹區", "岡山區", "路竹區", "阿蓮區", "田寮區", "燕巢區", "橋頭區", "梓官區", "彌陀區", "永安區", "湖內區", "旗山區", "美濃區", "六龜區", "內門區", "杉林區", "甲仙區", "桃源區", "那瑪夏區", "茂林區", "茄萣區"], "屏東縣": ["屏東市", "潮州鎮", "東港鎮", "恆春鎮", "萬丹鄉", "長治鄉", "麟洛鄉", "九如鄉", "里港鄉", "高樹鄉", "鹽埔鄉", "內埔鄉", "竹田鄉", "竹田鄉", "萬巒鄉", "內埔鄉", "竹田鄉", "新埤鄉", "枋寮鄉", "新園鄉", "崁頂鄉", "林邊鄉", "南州鄉", "佳冬鄉", "琉球鄉", "車城鄉", "滿州鄉", "枋山鄉", "三地門鄉", "霧臺鄉", "瑪家鄉", "泰武鄉", "來義鄉", "春日鄉", "獅子鄉", "牡丹鄉"], "宜蘭縣": ["宜蘭市", "羅東鎮", "蘇澳鎮", "頭城鎮", "礁溪鄉", "壯圍鄉", "員山鄉", "冬山鄉", "五結鄉", "三星鄉", "大同鄉", "南澳鄉"], "花蓮縣": ["花蓮市", "鳳林鎮", "玉里鎮", "新城鄉", "吉安鄉", "壽豐鄉", "光復鄉", "豐濱鄉", "瑞穗鄉", "富里鄉", "秀林鄉", "萬榮鄉", "卓溪鄉"], "臺東縣": ["臺東市", "成功鎮", "關山鎮", "卑南鄉", "鹿野鄉", "池上鄉", "東河鄉", "成功鎮", "長濱鄉", "太麻里鄉", "大武鄉", "綠島鄉", "海端鄉", "延平鄉", "金峰鄉", "達仁鄉", "蘭嶼鄉"]};
+    const selections = {};
 
-const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "埔里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
-
-const catDefs = [
-  {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面',
-   items:[
-    {key:'sg60',label:'SG60',prices:[1500,1200,1000]},
-    {key:'sg80',label:'SG80',prices:[1500,1200,1000]},
-    {key:'sg100',label:'SG100',prices:[1500,1200,1000]},
-    {key:'ssg60',label:'SSG60',prices:[1500,1200,1000]},
-    {key:'ssg80',label:'SSG80',prices:[1500,1200,1000]},
-    {key:'ssg100',label:'SSG100',prices:[1500,1200,1000]},
-    {key:'m-wall',label:'壁掛安裝（工）',prices:[300,250,200]},
-    {key:'m-yas',label:'錏管＋底座立桿（含料）',prices:[1800,1700,1600],unit:'組'},
-    {key:'m-yab',label:'錏管埋管（含料）',prices:[1800,1700,1600],unit:'組'},
-    {key:'m-gzs',label:'鍍鋅管＋底座立桿（含料）',prices:[2150,2050,1900],unit:'組'},
-    {key:'m-gzb',label:'鍍鋅管埋管（含料）',prices:[2150,2050,1900],unit:'組'},
-    {key:'m-tape',label:'黃黑反光貼紙（含料）',prices:[250,200,150],unit:'米'},
-  ]},
-  {key:'wheelstop',label:'車輪檔',tierBreaks:[50,200],tierLabels:['50顆以下','51–200顆','201顆以上'],unit:'顆',
-   items:[
-    {key:'ws-al',label:'鋁合金車輪檔',prices:[150,120,100]},
-    {key:'ws-pl',label:'塑膠車輪檔',prices:[150,120,100]},
-    {key:'ws-rb',label:'橡膠車輪擋',prices:[225,185,160]},
-    {key:'ws-pv',label:'PVC車輪檔',prices:[180,150,130]},
-    {key:'ws-as',label:'柏油路面加強',prices:[75,65,50]},
-    {key:'ws-r1',label:'一般車擋拆除',prices:[125,100,75]},
-    {key:'ws-r2',label:'螺絲隱藏車擋拆除',prices:[200,165,125]},
-  ]},
-  {key:'barrier',label:'防撞桿',tierBreaks:[50,150],tierLabels:['50支以下','51–150支','151支以上'],unit:'支',
-   items:[
-    {key:'br-pe',label:'PE防撞桿',prices:[150,125,100]},
-    {key:'br-ev',label:'EVA防撞桿',prices:[150,125,100]},
-    {key:'br-pu',label:'PU防撞桿',prices:[150,125,100]},
-    {key:'br-gd',label:'防護桿',prices:[200,165,140]},
-    {key:'br-ch',label:'塑膠鍊條',prices:[135,128,120],unit:'條'},
-    {key:'br-tw',label:'U型護欄（台製 100×30）',prices:[1350,1300,1220],unit:'個'},
-    {key:'br-cn',label:'U型護欄（陸製 100×30）',prices:[1180,1140,1090],unit:'個'},
-  ]},
-  {key:'speedbump',label:'減速墊',tierBreaks:[30,100],tierLabels:['15米以下','15–50米','50米以上'],unit:'塊',
-   items:[
-    {key:'sb-25',label:'橡膠 50×50×2.5cm',prices:[525,475,400]},
-    {key:'sb-35',label:'橡膠 50×50×3.5cm',prices:[525,475,400]},
-    {key:'sb-5', label:'橡膠 50×50×5cm', prices:[525,475,400]},
-    {key:'sb-rm',label:'舊減速墊回收',prices:[300,300,300],unit:'米',flat:true},
-  ]},
-  {key:'edgeguard',label:'護邊條',tierBreaks:[50,150],tierLabels:['50條以下','51–150條','151條以上'],unit:'條',
-   items:[
-    {key:'eg-pv',label:'PVC彩紋防撞條',prices:[150,120,100]},
-    {key:'eg-pu',label:'PU護邊條',prices:[120,100,100]},
-    {key:'eg-al',label:'螢光鋁邊條',prices:[150,120,100]},
-    {key:'eg-rb',label:'橡膠護邊條',prices:[150,120,100]},
-  ]},
-];
-
-const qty = {};
-
-function fmt(n){ return 'NT$ ' + Math.round(n).toLocaleString('zh-TW'); }
-function getTier(t,b){ return t<=b[0]?0:t<=b[1]?1:2; }
-
-function calcCat(cat){
-  let tierQty=0;
-  cat.items.forEach(it=>{ if(!it.flat) tierQty+=(qty[it.key]||0); });
-  const tier=getTier(tierQty,cat.tierBreaks);
-  let total=0;
-  cat.items.forEach(it=>{ total+=(qty[it.key]||0)*(it.flat?it.prices[0]:it.prices[tier]); });
-  return {total,tier,tierQty};
-}
-
-function recalc(){
-  catDefs.forEach(cat=>{
-    const {total,tier,tierQty}=calcCat(cat);
-
-    cat.tierLabels.forEach((_,i)=>{
-      const el=document.getElementById(`tier-tag-${cat.key}-${i}`);
-      if(el) el.className='tier-tag'+(i===tier&&tierQty>0?' active':'');
-    });
-
-    const tierInfo=document.getElementById('tier-info-'+cat.key);
-    if(tierInfo){
-      if(tierQty>0){
-        const mLabel=cat.key==='speedbump'?`（${(tierQty*0.5).toFixed(1)} 米）`:'';
-        tierInfo.textContent=`已選 ${tierQty} ${cat.unit}${mLabel}`;
-      } else { tierInfo.textContent=''; }
-    }
-
-    cat.items.forEach(it=>{
-      const q=qty[it.key]||0;
-      const up=it.flat?it.prices[0]:it.prices[tier];
-      const unit=it.unit||cat.unit;
-      const upEl=document.getElementById('up-'+it.key);
-      if(upEl) upEl.textContent=`NT$${up.toLocaleString('zh-TW')} / ${unit}`;
-      const subEl=document.getElementById('sub-'+it.key);
-      const sub=q*up;
-      if(subEl){
-        subEl.textContent=sub>0?fmt(sub):'';
-        subEl.className='item-sub'+(sub>0?' has-val':'');
-      }
-    });
-
-    const catSubEl=document.getElementById('catsubtotal-'+cat.key);
-    if(catSubEl) catSubEl.textContent=total>0?fmt(total):'';
-    const hdrEl=document.getElementById('cathdr-'+cat.key);
-    if(hdrEl) hdrEl.className='cat-hdr'+(total>0?' has-items':'');
-  });
-
-  const cityKey=document.getElementById('citySelect').value;
-  const city=cityData[cityKey];
-  const baseFee=city?city.base:0;
-  const installTotal=catDefs.reduce((s,c)=>s+calcCat(c).total,0);
-  const grand=city?Math.max(installTotal,baseFee):installTotal;
-
-  const area=document.getElementById('breakdownArea');
-
-  if(!cityKey&&installTotal===0){
-    area.innerHTML='<div class="grand-placeholder">請先選擇縣市與商品數量</div>';
-    return;
-  }
-
-  let html='';
-  if(city) html+=`<div class="breakdown-row base-fee"><span>基本出車費（${cityKey}）</span><span class="br-amt">${fmt(baseFee)}</span></div>`;
-  catDefs.forEach(c=>{
-    const {total}=calcCat(c);
-    if(total>0) html+=`<div class="breakdown-row"><span>${c.label} 施工費</span><span class="br-amt">${fmt(total)}</span></div>`;
-  });
-  if(!city) html+=`<div class="breakdown-row"><span style="color:rgba(255,255,255,0.4)">尚未選擇縣市</span><span></span></div>`;
-
-  const noteText=!city?'請選擇施工縣市以計算最終費用':
-    installTotal===0?'請選擇需施工的商品與數量':
-    installTotal<baseFee?`施工費 ${fmt(installTotal)} 未達基本出車費，以出車費計`:
-    `施工費 ${fmt(installTotal)}，高於基本出車費 ${fmt(baseFee)}`;
-
-  html+=`<div class="grand-row">
-    <span class="grand-label">預估總費用</span>
-    <span class="grand-val">${grand>0?fmt(grand):'—'}</span>
-  </div>
-  <div class="grand-note">${noteText}</div>`;
-  area.innerHTML=html;
-
-  document.getElementById('step1').className='step'+(cityKey?' active':'');
-  document.getElementById('step2').className='step'+(installTotal>0?' active':'');
-  document.getElementById('step3').className='step'+(grand>0?' active':'');
-}
-
-function changeQty(key,delta){
-  qty[key]=Math.max(0,(qty[key]||0)+delta);
-  const inp=document.getElementById('inp-'+key);
-  if(inp) inp.value=qty[key];
-  recalc();
-}
-function inputQty(key,val){
-  qty[key]=Math.max(0,parseInt(val)||0);
-  recalc();
-}
-function toggleCat(key){
-  const body=document.getElementById('catbody-'+key);
-  const arrow=document.getElementById('arrow-'+key);
-  if(!body) return;
-  const open=body.style.display==='block';
-  body.style.display=open?'none':'block';
-  if(arrow) arrow.style.transform=open?'':'rotate(90deg)';
-}
-
-function onCityChange(){
-  const cityKey=document.getElementById('citySelect').value;
-  const distSelect=document.getElementById('districtSelect');
-  const panel=document.getElementById('feePanel');
-  
-  distSelect.innerHTML = '<option value="">請選擇行政區…</option>';
-  
-  if(cityKey && districtList[cityKey]){
-    districtList[cityKey].forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d;
-      opt.textContent = d;
-      distSelect.appendChild(opt);
-    });
-    
-    const d=cityData[cityKey];
-    if(d){
-        panel.style.display='block';
-        document.getElementById('baseFeeVal').textContent=fmt(d.base);
-        document.getElementById('urgentFeeVal').textContent=fmt(d.urgent);
-    }
-  } else {
-    distSelect.innerHTML = '<option value="">請先選擇縣市…</option>';
-    panel.style.display='none';
-  }
-  checkRemote();
-  recalc();
-}
-
-function onDistrictChange(){
-    checkRemote();
-    recalc();
-}
-
-function checkRemote(){
-    const cityKey=document.getElementById('citySelect').value;
-    const districtKey=document.getElementById('districtSelect').value;
-    const remoteNote=document.getElementById('remoteNote');
-    
-    let isRemote = false;
-    if(cityKey && districtKey && remoteDistricts[cityKey]){
-        if(remoteDistricts[cityKey].includes(districtKey)){
-            isRemote = true;
+    function init() {
+        const wrapper = document.getElementById('product-sections');
+        for (const [catName, config] of Object.entries(catDefs)) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<div class="section-title">${catName}</div><div class="item-list" id="list-${catName}"></div>`;
+            wrapper.appendChild(card);
+            
+            const list = document.getElementById(`list-${catName}`);
+            config.items.forEach(item => {
+                const itemKey = `${catName}-${item.name}`;
+                selections[itemKey] = 0;
+                
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-price" id="price-display-${itemKey}">單價 $${item.prices[0]}</span>
+                        <span id="hint-${itemKey}" class="hint-label"></span>
+                    </div>
+                    <div class="qty-controls">
+                        <button class="btn-qty" onclick="changeQty('${itemKey}', -1)">-</button>
+                        <span class="qty-val" id="qty-${itemKey}">0</span>
+                        <button class="btn-qty" onclick="changeQty('${itemKey}', 1)">+</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
         }
     }
-    
-    remoteNote.style.display = isRemote ? 'block' : 'none';
-}
 
-const sel=document.getElementById('citySelect');
-Object.keys(cityData).forEach(c=>{
-  const o=document.createElement('option');
-  o.value=c; o.textContent=c;
-  sel.appendChild(o);
-});
+    function changeQty(key, delta) {
+        selections[key] = Math.max(0, selections[key] + delta);
+        document.getElementById(`qty-${key}`).innerText = selections[key];
+        updateAll();
+    }
 
-const container=document.getElementById('catContainer');
-catDefs.forEach(cat=>{
-  const section=document.createElement('div');
-  section.className='cat-block';
+    function updateAll() {
+        let itemsSum = 0;
 
-  const hdr=document.createElement('div');
-  hdr.className='cat-hdr';
-  hdr.id='cathdr-'+cat.key;
-  hdr.onclick=()=>toggleCat(cat.key);
-  hdr.innerHTML=`
-    <div class="cat-icon"></div>
-    <div class="cat-name">${cat.label}</div>
-    <div class="cat-subtotal" id="catsubtotal-${cat.key}"></div>
-    <div class="cat-arrow" id="arrow-${cat.key}">&#9658;</div>
-  `;
-  section.appendChild(hdr);
+        for (const [catName, config] of Object.entries(catDefs)) {
+            config.items.forEach(item => {
+                const key = `${catName}-${item.name}`;
+                const qty = selections[key];
+                
+                // 獨立計價邏輯：依據單一品項數量判斷級距
+                let tier = 0;
+                if (qty > config.thresholds[1]) tier = 2;
+                else if (qty > config.thresholds[0]) tier = 1;
+                
+                const currentPrice = item.prices[tier];
+                itemsSum += qty * currentPrice;
 
-  const body=document.createElement('div');
-  body.className='cat-body';
-  body.id='catbody-'+cat.key;
+                // 視覺提醒：紅色 [已享優惠價]
+                const priceDisp = document.getElementById(`price-display-${key}`);
+                const hintDisp = document.getElementById(`hint-${key}`);
+                
+                if (qty > 0 && tier > 0) {
+                    priceDisp.innerHTML = `單價 <span style="color:var(--urgent); font-weight:bold;">$${currentPrice}</span> <span class="discount-label">[已享優惠價]</span>`;
+                    hintDisp.innerText = "";
+                } else if (qty > 0 && qty <= config.thresholds[0]) {
+                    priceDisp.innerText = `單價 $${item.prices[0]}`;
+                    const need = config.thresholds[0] + 1 - qty;
+                    if (need <= 5) {
+                        hintDisp.innerText = `再加 ${need} 單位即享優惠價`;
+                    } else {
+                        hintDisp.innerText = "";
+                    }
+                } else {
+                    priceDisp.innerText = `單價 $${item.prices[0]}`;
+                    hintDisp.innerText = "";
+                }
+            });
+        }
 
-  const tierBar=document.createElement('div');
-  tierBar.className='tier-bar';
-  tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
-    cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('')+
-    `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
-  body.appendChild(tierBar);
+        const travelFee = parseInt(document.getElementById('location').value);
+        const isUrgent = document.getElementById('isUrgent').checked;
+        const urgentFee = isUrgent ? 2000 : 0;
 
-  cat.items.forEach(it=>{
-    const unit=it.unit||cat.unit;
-    const row=document.createElement('div');
-    row.className='item-row';
-    row.innerHTML=`
-      <div class="item-info">
-        <div class="item-name" title="${it.label}">${it.label}</div>
-        <div class="item-unit-price" id="up-${it.key}">NT$— / ${unit}</div>
-      </div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="changeQty('${it.key}',-1)">−</button>
-        <input class="qty-inp" id="inp-${it.key}" type="number" min="0" value="0"
-          oninput="inputQty('${it.key}',this.value)" onchange="inputQty('${it.key}',this.value)">
-        <button class="qty-btn" onclick="changeQty('${it.key}',1)">+</button>
-      </div>
-      <div class="item-sub" id="sub-${it.key}"></div>
-    `;
-    body.appendChild(row);
-  });
+        document.getElementById('items-sum').innerText = `$${itemsSum.toLocaleString()}`;
+        document.getElementById('travel-fee').innerText = `$${travelFee.toLocaleString()}`;
+        document.getElementById('urgent-fee-row').style.display = isUrgent ? 'flex' : 'none';
+        document.getElementById('final-total').innerText = `$${(itemsSum + travelFee + urgentFee).toLocaleString()}`;
+    }
 
-  section.appendChild(body);
-  container.appendChild(section);
-});
-
-recalc();
+    init();
 </script>
+
 </body>
 </html>
