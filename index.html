@@ -23,6 +23,7 @@
     --alert-red-bg: #FFF5F5;
     --alert-red-text: #C53030;
     --alert-red-border: #FEB2B2;
+    --urgent-red: #dc2626; /* 新增提醒用紅色變數 */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -274,6 +275,11 @@
   .item-info { flex: 1; min-width: 0; }
   .item-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .item-unit-price { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  
+  /* 視覺提醒樣式 */
+  .discount-tag { color: var(--urgent-red); font-weight: 700; margin-left: 4px; }
+  .hint-tag { color: var(--urgent-red); font-size: 10px; display: block; margin-top: 2px; opacity: 0.8; }
+
   .qty-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .qty-btn {
     width: 28px; height: 28px;
@@ -482,29 +488,81 @@
 
 <script>
 const cityData = {
-  '臺北市':{base:5500,urgent:5000}, '新北市':{base:5500,urgent:5000}, '基隆市':{base:7000,urgent:5000}, '桃園市':{base:4000,urgent:4500}, '新竹縣':{base:3500,urgent:4500}, '新竹市':{base:3500,urgent:4000}, '苗栗縣':{base:2800,urgent:3500}, '臺中市':{base:2100,urgent:3000}, '彰化縣':{base:2500,urgent:3000}, '南投縣':{base:3500,urgent:3000}, '雲林縣':{base:3500,urgent:3000}, '嘉義市':{base:4000,urgent:4500}, '嘉義縣':{base:4000,urgent:4500}, '臺南市':{base:6000,urgent:4500}, '高雄市':{base:7300,urgent:5000}, '屏東縣':{base:15000,urgent:8000}, '宜蘭縣':{base:12000,urgent:8000}, '花蓮縣':{base:15000,urgent:8000}, '臺東縣':{base:18000,urgent:8000}
+  '臺北市':{base:5500,urgent:5000},
+  '新北市':{base:5500,urgent:5000},
+  '基隆市':{base:7000,urgent:5000},
+  '桃園市':{base:4000,urgent:4500},
+  '新竹縣':{base:3500,urgent:4500},
+  '新竹市':{base:3500,urgent:4000},
+  '苗栗縣':{base:2800,urgent:3500},
+  '臺中市':{base:2100,urgent:3000},
+  '彰化縣':{base:2500,urgent:3000},
+  '南投縣':{base:3500,urgent:3000},
+  '雲林縣':{base:3500,urgent:3000},
+  '嘉義市':{base:4000,urgent:4500},
+  '嘉義縣':{base:4000,urgent:4500},
+  '臺南市':{base:6000,urgent:4500},
+  '高雄市':{base:7300,urgent:5000},
+  '屏東縣':{base:15000,urgent:8000},
+  '宜蘭縣':{base:12000,urgent:8000},
+  '花蓮縣':{base:15000,urgent:8000},
+  '臺東縣':{base:18000,urgent:8000}
 };
 
 const districtList = {"基隆市": ["仁愛區", "信義區", "中正區", "中山區", "安樂區", "暖暖區", "七堵區"], "臺北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"], "新北市": ["板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "樹林區", "鶯歌區", "三峽區", "淡水區", "汐止區", "瑞芳區", "土城區", "蘆洲區", "五股區", "泰山區", "林口區", "深坑區", "石碇區", "坪林區", "三芝區", "石門區", "八里區", "平溪區", "雙溪區", "貢寮區", "金山區", "萬里區", "烏來區"], "桃園市": ["桃園區", "中壢區", "大溪區", "楊梅區", "蘆竹區", "大園區", "龜山區", "八德區", "龍潭區", "平鎮區", "新屋區", "觀音區", "復興區"], "新竹市": ["東區", "北區", "香山區"], "新竹縣": ["竹北市", "竹東鎮", "新埔鎮", "關西鎮", "湖口鄉", "新豐鄉", "芎林鄉", "橫山鄉", "北埔鄉", "寶山鄉", "峨眉鄉", "尖石鄉", "五峰鄉"], "苗栗縣": ["苗栗市", "頭份市", "竹南鎮", "後龍鎮", "通霄鎮", "苑裡鎮", "卓蘭鎮", "造橋鄉", "西湖鄉", "頭屋鄉", "公館鄉", "銅鑼鄉", "三義鄉", "大湖鄉", "獅潭鄉", "三灣鄉", "南庄鄉", "泰安鄉"], "臺中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "太平區", "大里區", "霧峰區", "烏日區", "豐原區", "後里區", "石岡區", "東勢區", "和平區", "新社區", "潭子區", "大雅區", "神岡區", "大肚區", "龍井區", "沙鹿區", "梧棲區", "清水區", "大甲區", "外埔區", "大安區"], "彰化縣": ["彰化市", "員林市", "和美鎮", "鹿港鎮", "溪湖鎮", "二林鎮", "田中鎮", "北斗鎮", "花壇鄉", "芬園鄉", "大村鄉", "永靖鄉", "伸港鄉", "線西鄉", "福興鄉", "秀水鄉", "埔心鄉", "埔鹽鄉", "大城鄉", "芳苑鄉", "竹塘鄉", "溪州鄉", "埤頭鄉", "二水鄉", "田尾鄉", "社頭鄉"], "南投縣": ["南投市", "埔里鎮", "草屯鎮", "竹山鎮", "集集鎮", "名間鄉", "鹿谷鄉", "中寮鄉", "魚池鄉", "國姓鄉", "水里鄉", "信義鄉", "仁愛鄉"], "雲林縣": ["斗六市", "斗南鎮", "虎尾鎮", "西螺鎮", "土庫鎮", "北港鎮", "古坑鄉", "大埤鄉", "莿桐鄉", "林內鄉", "二崙鄉", "崙背鄉", "麥寮鄉", "東勢鄉", "褒忠鄉", "臺西鄉", "元長鄉", "四湖鄉", "口湖鄉", "水林鄉"], "嘉義市": ["東區", "西區"], "嘉義縣": ["太保市", "朴子市", "布袋鎮", "大林鎮", "民雄鄉", "溪口鄉", "新港鄉", "六腳鄉", "東石鄉", "義竹鄉", "鹿草鄉", "水上鄉", "中埔鄉", "竹崎鄉", "梅山鄉", "番路鄉", "大埔鄉", "阿里山鄉"], "臺南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "歸仁區", "新化區", "左鎮區", "玉井區", "楠西區", "南化區", "仁德區", "關廟區", "龍崎區", "官田區", "麻豆區", "佳里區", "西港區", "七股區", "將軍區", "北門區", "新營區", "後壁區", "白河區", "東山區", "六甲區", "下營區", "柳營區", "鹽水區", "善化區", "大內區", "山上區", "新市區", "安定區", "左鎮區"], "高雄市": ["楠梓區", "左營區", "鼓山區", "三民區", "鹽埕區", "前金區", "新興區", "苓雅區", "前鎮區", "旗津區", "小港區", "鳳山區", "大寮區", "鳥松區", "林園區", "仁武區", "大社區", "大樹區", "岡山區", "路竹區", "阿蓮區", "田寮區", "燕巢區", "橋頭區", "梓官區", "彌陀區", "永安區", "湖內區", "旗山區", "美濃區", "六龜區", "內門區", "杉林區", "甲仙區", "桃源區", "那瑪夏區", "茂林區", "茄萣區"], "屏東縣": ["屏東市", "潮州鎮", "東港鎮", "恆春鎮", "萬丹鄉", "長治鄉", "麟洛鄉", "九如鄉", "里港鄉", "高樹鄉", "鹽埔鄉", "內埔鄉", "竹田鄉", "竹田鄉", "萬巒鄉", "內埔鄉", "竹田鄉", "新埤鄉", "枋寮鄉", "新園鄉", "崁頂鄉", "林邊鄉", "南州鄉", "佳冬鄉", "琉球鄉", "車城鄉", "滿州鄉", "枋山鄉", "三地門鄉", "霧臺鄉", "瑪家鄉", "泰武鄉", "來義鄉", "春日鄉", "獅子鄉", "牡丹鄉"], "宜蘭縣": ["宜蘭市", "羅東鎮", "蘇澳鎮", "頭城鎮", "礁溪鄉", "壯圍鄉", "員山鄉", "冬山鄉", "五結鄉", "三星鄉", "大同鄉", "南澳鄉"], "花蓮縣": ["花蓮市", "鳳林鎮", "玉里鎮", "新城鄉", "吉安鄉", "壽豐鄉", "光復鄉", "豐濱鄉", "瑞穗鄉", "富里鄉", "秀林鄉", "萬榮鄉", "卓溪鄉"], "臺東縣": ["臺東市", "成功鎮", "關山鎮", "卑南鄉", "鹿野鄉", "池上鄉", "東河鄉", "成功鎮", "長濱鄉", "太麻里鄉", "大武鄉", "綠島鄉", "海端鄉", "延平鄉", "金峰鄉", "達仁鄉", "蘭嶼鄉"]};
 
-const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "埔里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
+const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "進里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
 
 const catDefs = [
-  {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面', items:[
-    {key:'sg60',label:'SG60',prices:[1500,1200,1000]}, {key:'sg80',label:'SG80',prices:[1500,1200,1000]}, {key:'sg100',label:'SG100',prices:[1500,1200,1000]}, {key:'ssg60',label:'SSG60',prices:[1500,1200,1000]}, {key:'ssg80',label:'SSG80',prices:[1500,1200,1000]}, {key:'ssg100',label:'SSG100',prices:[1500,1200,1000]}, {key:'m-wall',label:'壁掛安裝（工）',prices:[300,250,200]}, {key:'m-yas',label:'錏管＋底座立桿（含料）',prices:[1800,1700,1600],unit:'組'}, {key:'m-yab',label:'錏管埋管（含料）',prices:[1800,1700,1600],unit:'組'}, {key:'m-gzs',label:'鍍鋅管＋底座立桿（含料）',prices:[2150,2050,1900],unit:'組'}, {key:'m-gzb',label:'鍍鋅管埋管（含料）',prices:[2150,2050,1900],unit:'組'}, {key:'m-tape',label:'黃黑反光貼紙（含料）',prices:[250,200,150],unit:'米'}
+  {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面',
+   items:[
+    {key:'sg60',label:'SG60',prices:[1500,1200,1000]},
+    {key:'sg80',label:'SG80',prices:[1500,1200,1000]},
+    {key:'sg100',label:'SG100',prices:[1500,1200,1000]},
+    {key:'ssg60',label:'SSG60',prices:[1500,1200,1000]},
+    {key:'ssg80',label:'SSG80',prices:[1500,1200,1000]},
+    {key:'ssg100',label:'SSG100',prices:[1500,1200,1000]},
+    {key:'m-wall',label:'壁掛安裝（工）',prices:[300,250,200]},
+    {key:'m-yas',label:'錏管＋底座立桿（含料）',prices:[1800,1700,1600],unit:'組'},
+    {key:'m-yab',label:'錏管埋管（含料）',prices:[1800,1700,1600],unit:'組'},
+    {key:'m-gzs',label:'鍍鋅管＋底座立桿（含料）',prices:[2150,2050,1900],unit:'組'},
+    {key:'m-gzb',label:'鍍鋅管埋管（含料）',prices:[2150,2050,1900],unit:'組'},
+    {key:'m-tape',label:'黃黑反光貼紙（含料）',prices:[250,200,150],unit:'米'},
   ]},
-  {key:'wheelstop',label:'車輪檔',tierBreaks:[50,200],tierLabels:['50顆以下','51–200顆','201顆以上'],unit:'顆', items:[
-    {key:'ws-al',label:'鋁合金車輪檔',prices:[150,120,100]}, {key:'ws-pl',label:'塑膠車輪檔',prices:[150,120,100]}, {key:'ws-rb',label:'橡膠車輪擋',prices:[225,185,160]}, {key:'ws-pv',label:'PVC車輪檔',prices:[180,150,130]}, {key:'ws-as',label:'柏油路面加強',prices:[75,65,50]}, {key:'ws-r1',label:'一般車擋拆除',prices:[125,100,75]}, {key:'ws-r2',label:'螺絲隱藏車擋拆除',prices:[200,165,125]}
+  {key:'wheelstop',label:'車輪檔',tierBreaks:[50,200],tierLabels:['50顆以下','51–200顆','201顆以上'],unit:'顆',
+   items:[
+    {key:'ws-al',label:'鋁合金車輪檔',prices:[150,120,100]},
+    {key:'ws-pl',label:'塑膠車輪檔',prices:[150,120,100]},
+    {key:'ws-rb',label:'橡膠車輪擋',prices:[225,185,160]},
+    {key:'ws-pv',label:'PVC車輪檔',prices:[180,150,130]},
+    {key:'ws-as',label:'柏油路面加強',prices:[75,65,50]},
+    {key:'ws-r1',label:'一般車擋拆除',prices:[125,100,75]},
+    {key:'ws-r2',label:'螺絲隱藏車擋拆除',prices:[200,165,125]},
   ]},
-  {key:'barrier',label:'防撞桿',tierBreaks:[50,150],tierLabels:['50支以下','51–150支','151支以上'],unit:'支', items:[
-    {key:'br-pe',label:'PE防撞桿',prices:[150,125,100]}, {key:'br-ev',label:'EVA防撞桿',prices:[150,125,100]}, {key:'br-pu',label:'PU防撞桿',prices:[150,125,100]}, {key:'br-gd',label:'防護桿',prices:[200,165,140]}, {key:'br-ch',label:'塑膠鍊條',prices:[135,128,120],unit:'條'}, {key:'br-tw',label:'U型護欄（台製 100×30）',prices:[1350,1300,1220],unit:'個'}, {key:'br-cn',label:'U型護欄（陸製 100×30）',prices:[1180,1140,1090],unit:'個'}
+  {key:'barrier',label:'防撞桿',tierBreaks:[50,150],tierLabels:['50支以下','51–150支','151支以上'],unit:'支',
+   items:[
+    {key:'br-pe',label:'PE防撞桿',prices:[150,125,100]},
+    {key:'br-ev',label:'EVA防撞桿',prices:[150,125,100]},
+    {key:'br-pu',label:'PU防撞桿',prices:[150,125,100]},
+    {key:'br-gd',label:'防護桿',prices:[200,165,140]},
+    {key:'br-ch',label:'塑膠鍊條',prices:[135,128,120],unit:'條'},
+    {key:'br-tw',label:'U型護欄（台製 100×30）',prices:[1350,1300,1220],unit:'個'},
+    {key:'br-cn',label:'U型護欄（陸製 100×30）',prices:[1180,1140,1090],unit:'個'},
   ]},
-  {key:'speedbump',label:'減速墊',tierBreaks:[30,100],tierLabels:['15米以下','15–50米','50米以上'],unit:'塊', items:[
-    {key:'sb-25',label:'橡膠 50×50×2.5cm',prices:[525,475,400]}, {key:'sb-35',label:'橡膠 50×50×3.5cm',prices:[525,475,400]}, {key:'sb-5', label:'橡膠 50×50×5cm', prices:[525,475,400]}, {key:'sb-rm',label:'舊減速墊回收',prices:[300,300,300],unit:'米',flat:true}
+  {key:'speedbump',label:'減速墊',tierBreaks:[30,100],tierLabels:['15米以下','15–50米','50米以上'],unit:'塊',
+   items:[
+    {key:'sb-25',label:'橡膠 50×50×2.5cm',prices:[525,475,400]},
+    {key:'sb-35',label:'橡膠 50×50×3.5cm',prices:[525,475,400]},
+    {key:'sb-5', label:'橡膠 50×50×5cm', prices:[525,475,400]},
+    {key:'sb-rm',label:'舊減速墊回收',prices:[300,300,300],unit:'米',flat:true},
   ]},
-  {key:'edgeguard',label:'護邊條',tierBreaks:[50,150],tierLabels:['50條以下','51–150條','151條以上'],unit:'條', items:[
-    {key:'eg-pv',label:'PVC彩紋防撞條',prices:[150,120,100]}, {key:'eg-pu',label:'PU護邊條',prices:[120,100,100]}, {key:'eg-al',label:'螢光鋁邊條',prices:[150,120,100]}, {key:'eg-rb',label:'橡膠護邊條',prices:[150,120,100]}
-  ]}
+  {key:'edgeguard',label:'護邊條',tierBreaks:[50,150],tierLabels:['50條以下','51–150條','151條以上'],unit:'條',
+   items:[
+    {key:'eg-pv',label:'PVC彩紋防撞條',prices:[150,120,100]},
+    {key:'eg-pu',label:'PU護邊條',prices:[120,100,100]},
+    {key:'eg-al',label:'螢光鋁邊條',prices:[150,120,100]},
+    {key:'eg-rb',label:'橡膠護邊條',prices:[150,120,100]},
+  ]},
 ];
 
 const qty = {};
@@ -512,75 +570,113 @@ const qty = {};
 function fmt(n){ return 'NT$ ' + Math.round(n).toLocaleString('zh-TW'); }
 function getTier(t,b){ return t<=b[0]?0:t<=b[1]?1:2; }
 
-function calcCat(cat){
-  let tierQty=0;
-  cat.items.forEach(it=>{ if(!it.flat) tierQty+=(qty[it.key]||0); });
-  const tier=getTier(tierQty,cat.tierBreaks);
-  let total=0;
-  cat.items.forEach(it=>{ total+=(qty[it.key]||0)*(it.flat?it.prices[0]:it.prices[tier]); });
-  return {total,tier,tierQty};
+// --- 核心修改 1：商品數量獨立判定級距 ---
+function calcCat(cat) {
+  let total = 0;
+  let catQtyTotal = 0;
+  
+  cat.items.forEach(it => {
+    const q = qty[it.key] || 0;
+    if (!it.flat) catQtyTotal += q;
+    // 獨立以該項目的購買量 (q) 取級距
+    const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
+    total += q * it.prices[tier];
+  });
+
+  return { total, catQtyTotal };
 }
 
-// --- 核心優化：重新編寫 recalc 函式以顯示詳細明細 ---
-function recalc(){
+// --- 核心修改 2：整合視覺提醒與展開明細 ---
+function recalc() {
   let installTotal = 0;
   let hasAnyItem = false;
 
-  // 1. 更新 Step 2 的 UI 與 計算總額
-  catDefs.forEach(cat=>{
-    const {total,tier,tierQty}=calcCat(cat);
+  catDefs.forEach(cat => {
+    const { total, catQtyTotal } = calcCat(cat);
     installTotal += total;
-    if(tierQty > 0) hasAnyItem = true;
-
-    cat.tierLabels.forEach((_,i)=>{
-      const el=document.getElementById(`tier-tag-${cat.key}-${i}`);
-      if(el) el.className='tier-tag'+(i===tier&&tierQty>0?' active':'');
-    });
-
-    const tierInfo=document.getElementById('tier-info-'+cat.key);
-    if(tierInfo){
-      if(tierQty>0){
-        const mLabel=cat.key==='speedbump'?`（${(tierQty*0.5).toFixed(1)} 米）`:'';
-        tierInfo.textContent=`已選 ${tierQty} ${cat.unit}${mLabel}`;
-      } else { tierInfo.textContent=''; }
+    if (catQtyTotal > 0 || cat.items.some(it => (qty[it.key] || 0) > 0)) {
+        hasAnyItem = true;
     }
 
-    cat.items.forEach(it=>{
-      const q=qty[it.key]||0;
-      const up=it.flat?it.prices[0]:it.prices[tier];
-      const unit=it.unit||cat.unit;
-      const upEl=document.getElementById('up-'+it.key);
-      if(upEl) upEl.textContent=`NT$${up.toLocaleString('zh-TW')} / ${unit}`;
-      const subEl=document.getElementById('sub-'+it.key);
-      const sub=q*up;
-      if(subEl){
-        subEl.textContent=sub>0?fmt(sub):'';
-        subEl.className='item-sub'+(sub>0?' has-val':'');
-      }
-    });
+    // 更新類別標頭文字
+    const tierInfo = document.getElementById('tier-info-' + cat.key);
+    if (tierInfo) {
+      if (catQtyTotal > 0) {
+        const mLabel = cat.key === 'speedbump' ? `（${(catQtyTotal * 0.5).toFixed(1)} 米）` : '';
+        tierInfo.textContent = `已選 ${catQtyTotal} ${cat.unit}${mLabel}`;
+      } else { tierInfo.textContent = ''; }
+    }
 
-    const catSubEl=document.getElementById('catsubtotal-'+cat.key);
-    if(catSubEl) catSubEl.textContent=total>0?fmt(total):'';
-    const hdrEl=document.getElementById('cathdr-'+cat.key);
-    if(hdrEl) hdrEl.className='cat-hdr'+(total>0?' has-items':'');
+    const hdrEl = document.getElementById('cathdr-' + cat.key);
+    if (hdrEl) hdrEl.className = 'cat-hdr' + (total > 0 ? ' has-items' : '');
+    const catSubEl = document.getElementById('catsubtotal-' + cat.key);
+    if (catSubEl) catSubEl.textContent = total > 0 ? fmt(total) : '';
+
+    // 單個品項價格變色與湊單提示
+    cat.items.forEach(it => {
+      const q = qty[it.key] || 0;
+      const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
+      const up = it.prices[tier];
+      const unit = it.unit || cat.unit;
+
+      const upEl = document.getElementById('up-' + it.key);
+      const hintBox = document.getElementById('hint-' + it.key);
+
+      if (upEl) {
+        if (q > 0 && tier > 0) {
+          // 已達標：紅色單價 + 標籤
+          upEl.innerHTML = `<span style="color:var(--urgent-red); font-weight:700;">NT$${up.toLocaleString('zh-TW')}</span> / ${unit} <span class="discount-tag">[已享優惠價]</span>`;
+          if (hintBox) hintBox.innerText = "";
+        } else {
+          // 未達標
+          upEl.innerHTML = `NT$${it.prices[0].toLocaleString('zh-TW')} / ${unit}`;
+          // 湊單提示 (只差 5 單位以內才顯示)
+          if (hintBox) {
+            const gap = cat.tierBreaks[0] + 1 - q;
+            if (q > 0 && gap > 0 && gap <= 5 && !it.flat) {
+              hintBox.innerText = `再加 ${gap} ${unit}即享優惠價`;
+            } else {
+              hintBox.innerText = "";
+            }
+          }
+        }
+      }
+
+      const subEl = document.getElementById('sub-' + it.key);
+      const sub = q * up;
+      if (subEl) {
+        subEl.textContent = sub > 0 ? fmt(sub) : '';
+        subEl.className = 'item-sub' + (sub > 0 ? ' has-val' : '');
+      }
+
+      // 費率分級標籤 (只要該類別中有任一商品享有該級距即可點亮)
+      cat.tierLabels.forEach((_, i) => {
+        const el = document.getElementById(`tier-tag-${cat.key}-${i}`);
+        if (el) {
+          const isReached = q > 0 && i === tier;
+          if (isReached) el.classList.add('active');
+          else if (catQtyTotal === 0) el.classList.remove('active');
+        }
+      });
+    });
   });
 
-  // 2. 渲染 Step 3 明細區塊
-  const cityKey=document.getElementById('citySelect').value;
-  const city=cityData[cityKey];
-  const baseFee=city?city.base:0;
-  const grand=city?Math.max(installTotal,baseFee):installTotal;
-  const area=document.getElementById('breakdownArea');
+  // 渲染 Step 3 費用明細（展開所有品項、數量與單價）
+  const cityKey = document.getElementById('citySelect').value;
+  const city = cityData[cityKey];
+  const baseFee = city ? city.base : 0;
+  const grand = city ? Math.max(installTotal, baseFee) : installTotal;
+  const area = document.getElementById('breakdownArea');
 
-  if(!cityKey && !hasAnyItem){
-    area.innerHTML='<div class="grand-placeholder">請先選擇縣市與商品數量</div>';
+  if (!cityKey && !hasAnyItem) {
+    area.innerHTML = '<div class="grand-placeholder">請先選擇縣市與商品數量</div>';
     return;
   }
 
-  let html='';
+  let html = '';
   
-  // A. 顯示基本出車費
-  if(city) {
+  // 顯示出車基本費
+  if (city) {
     html += `<div class="breakdown-row base-fee">
                <span>基本出車費（${cityKey}）</span>
                <span class="br-amt">${fmt(baseFee)}</span>
@@ -589,18 +685,20 @@ function recalc(){
     html += `<div class="breakdown-row" style="margin-bottom:10px;"><span style="color:rgba(255,255,255,0.4)">尚未選擇縣市</span></div>`;
   }
 
-  // B. 展開詳細品項明細
+  // 逐個大類展開其底下有選購的單項明細
   catDefs.forEach(cat => {
-    const {tier, total} = calcCat(cat);
     const selectedItems = cat.items.filter(it => (qty[it.key] || 0) > 0);
     
     if (selectedItems.length > 0) {
       html += `<div class="breakdown-group">
                  <div class="breakdown-group-title">${cat.label} 施工明細</div>`;
+                 
       selectedItems.forEach(it => {
         const q = qty[it.key];
-        const up = it.flat ? it.prices[0] : it.prices[tier];
+        const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
+        const up = it.prices[tier];
         const unit = it.unit || cat.unit;
+        
         html += `<div class="breakdown-row item-detail">
                    <span>${it.label} (${q}${unit} × ${up.toLocaleString()})</span>
                    <span class="br-amt">${fmt(q * up)}</span>
@@ -610,24 +708,23 @@ function recalc(){
     }
   });
 
-  // C. 總計與說明
-  const noteText=!city?'請選擇施工縣市以計算最終費用' :
-    !hasAnyItem?'請選擇需施工的商品與數量' :
+  // 最終加總提示文字
+  const noteText = !city ? '請選擇施工縣市以計算最終費用' :
+    !hasAnyItem ? '請選擇需施工的商品與數量' :
     installTotal < baseFee ? `細項總計 ${fmt(installTotal)} 未達基本出車費，以出車費計收` :
     `細項總計 ${fmt(installTotal)}，已高於基本出車費`;
 
-  html+=`<div class="grand-row">
+  html += `<div class="grand-row">
     <span class="grand-label">預估總費用</span>
-    <span class="grand-val">${grand>0?fmt(grand):'—'}</span>
+    <span class="grand-val">${grand > 0 ? fmt(grand) : '—'}</span>
   </div>
   <div class="grand-note">${noteText}</div>`;
   
   area.innerHTML = html;
 
-  // 更新步驟指示器
-  document.getElementById('step1').className='step'+(cityKey?' active':'');
-  document.getElementById('step2').className='step'+(hasAnyItem?' active':'');
-  document.getElementById('step3').className='step'+(grand>0?' active':'');
+  document.getElementById('step1').className = 'step' + (cityKey ? ' active' : '');
+  document.getElementById('step2').className = 'step' + (hasAnyItem ? ' active' : '');
+  document.getElementById('step3').className = 'step' + (grand > 0 ? ' active' : '');
 }
 
 function changeQty(key,delta){
@@ -741,6 +838,7 @@ catDefs.forEach(cat=>{
       <div class="item-info">
         <div class="item-name" title="${it.label}">${it.label}</div>
         <div class="item-unit-price" id="up-${it.key}">NT$— / ${unit}</div>
+        <div id="hint-${it.key}" class="hint-tag"></div>
       </div>
       <div class="qty-wrap">
         <button class="qty-btn" onclick="changeQty('${it.key}',-1)">−</button>
