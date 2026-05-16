@@ -185,6 +185,63 @@
     border-radius: 0 3px 3px 0;
   }
 
+  .remote-quote-card {
+    display: none;
+    margin-top: 16px;
+    padding: 18px;
+    background: #fffaf5;
+    border: 1px solid #e8b98f;
+    border-left: 4px solid var(--warn);
+    border-radius: 4px;
+  }
+  .remote-quote-eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.6px;
+    color: var(--warn);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .remote-quote-title {
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .remote-quote-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+  }
+  .remote-quote-area {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 6px 10px;
+    background: rgba(176,74,0,0.08);
+    color: var(--warn);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .line-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .line-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 4px;
+    background: #06c755;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .line-btn:hover { background: #05b64d; }
   /* --- 1. 專業視覺化：藍框服務條款樣式 --- */
   .service-notes {
     background-color: #f8f9fa;
@@ -446,7 +503,7 @@
           </div>
         </div>
         <div class="remote-note" id="remoteNote">
-          ⚠ 此地區可能為偏遠地區，需與司機確認是否加收費用，估價僅供參考，詳細報價請向我方再次確認。
+          此施工地點屬偏遠服務區，線上試算不適用。請透過官方 LINE 聯繫專人確認報價。
         </div>
 
         <div class="service-notes">
@@ -461,8 +518,17 @@
       </div>
     </div>
   </div>
-
-  <div class="card">
+      <div class="remote-quote-card" id="remoteQuoteCard">
+        <div class="remote-quote-eyebrow">偏遠地區詢價</div>
+        <div class="remote-quote-title">此地區需由專人確認報價</div>
+        <div class="remote-quote-text">您選擇的施工地點屬偏遠服務區，線上試算不適用。請提供施工地址、商品項目與數量，由專人確認後回覆正式報價。</div>
+        <div class="remote-quote-area" id="remoteAreaLabel">已選地區：—</div>
+        <div class="line-actions">
+          <a class="line-btn" href="https://line.me/R/ti/p/@096ufahb" target="_blank" rel="noopener">官方 LINE @096ufahb</a>
+          <a class="line-btn" href="https://line.me/R/ti/p/@jy168" target="_blank" rel="noopener">官方 LINE @jy168</a>
+        </div>
+      </div>
+  <div class="card" id="productCard">
     <div class="card-header">
       <span class="label">Step 2 &nbsp;·&nbsp; 施工商品與數量</span>
     </div>
@@ -471,7 +537,7 @@
     </div>
   </div>
 
-  <div class="summary-card">
+  <div class="summary-card" id="summaryCard">
     <div class="s-header">Step 3 &nbsp;·&nbsp; 費用明細</div>
     <div class="s-body">
       <div id="breakdownArea">
@@ -480,7 +546,7 @@
     </div>
   </div>
 
-  <div class="footnote">
+  <div class="footnote" id="footnote">
     ＊ 此為預估費用，以實際派工單為準。<br>
     ＊ 急件費為額外加收，是否需急件請直接洽詢。<br>
     ＊ 偏遠地區、特殊地形或量體較大時，費用可能另計。
@@ -511,9 +577,9 @@ const cityData = {
   '臺東縣':{base:18000,urgent:8000}
 };
 
-const districtList = {"基隆市": ["仁愛區", "信義區", "中正區", "中山區", "安樂區", "暖暖區", "七堵區"], "臺北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"], "新北市": ["板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "樹林區", "鶯歌區", "三峽區", "淡水區", "汐止區", "瑞芳區", "土城區", "蘆洲區", "五股區", "泰山區", "林口區", "深坑區", "石碇區", "坪林區", "三芝區", "石門區", "八里區", "平溪區", "雙溪區", "貢寮區", "金山區", "萬里區", "烏來區"], "桃園市": ["桃園區", "中壢區", "大溪區", "楊梅區", "蘆竹區", "大園區", "龜山區", "八德區", "龍潭區", "平鎮區", "新屋區", "觀音區", "復興區"], "新竹市": ["東區", "北區", "香山區"], "新竹縣": ["竹北市", "竹東鎮", "新埔鎮", "關西鎮", "湖口鄉", "新豐鄉", "芎林鄉", "橫山鄉", "北埔鄉", "寶山鄉", "峨眉鄉", "尖石鄉", "五峰鄉"], "苗栗縣": ["苗栗市", "頭份市", "竹南鎮", "後龍鎮", "通霄鎮", "苑裡鎮", "卓蘭鎮", "造橋鄉", "西湖鄉", "頭屋鄉", "公館鄉", "銅鑼鄉", "三義鄉", "大湖鄉", "獅潭鄉", "三灣鄉", "南庄鄉", "泰安鄉"], "臺中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "太平區", "大里區", "霧峰區", "烏日區", "豐原區", "後里區", "石岡區", "東勢區", "和平區", "新社區", "潭子區", "大雅區", "神岡區", "大肚區", "龍井區", "沙鹿區", "梧棲區", "清水區", "大甲區", "外埔區", "大安區"], "彰化縣": ["彰化市", "員林市", "和美鎮", "鹿港鎮", "溪湖鎮", "二林鎮", "田中鎮", "北斗鎮", "花壇鄉", "芬園鄉", "大村鄉", "永靖鄉", "伸港鄉", "線西鄉", "福興鄉", "秀水鄉", "埔心鄉", "埔鹽鄉", "大城鄉", "芳苑鄉", "竹塘鄉", "溪州鄉", "埤頭鄉", "二水鄉", "田尾鄉", "社頭鄉"], "南投縣": ["南投市", "埔里鎮", "草屯鎮", "竹山鎮", "集集鎮", "名間鄉", "鹿谷鄉", "中寮鄉", "魚池鄉", "國姓鄉", "水里鄉", "信義鄉", "仁愛鄉"], "雲林縣": ["斗六市", "斗南鎮", "虎尾鎮", "西螺鎮", "土庫鎮", "北港鎮", "古坑鄉", "大埤鄉", "莿桐鄉", "林內鄉", "二崙鄉", "崙背鄉", "麥寮鄉", "東勢鄉", "褒忠鄉", "臺西鄉", "元長鄉", "四湖鄉", "口湖鄉", "水林鄉"], "嘉義市": ["東區", "西區"], "嘉義縣": ["太保市", "朴子市", "布袋鎮", "大林鎮", "民雄鄉", "溪口鄉", "新港鄉", "六腳鄉", "東石鄉", "義竹鄉", "鹿草鄉", "水上鄉", "中埔鄉", "竹崎鄉", "梅山鄉", "番路鄉", "大埔鄉", "阿里山鄉"], "臺南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "歸仁區", "新化區", "左鎮區", "玉井區", "楠西區", "南化區", "仁德區", "關廟區", "龍崎區", "官田區", "麻豆區", "佳里區", "西港區", "七股區", "將軍區", "北門區", "新營區", "後壁區", "白河區", "東山區", "六甲區", "下營區", "柳營區", "鹽水區", "善化區", "大內區", "山上區", "新市區", "安定區", "左鎮區"], "高雄市": ["楠梓區", "左營區", "鼓山區", "三民區", "鹽埕區", "前金區", "新興區", "苓雅區", "前鎮區", "旗津區", "小港區", "鳳山區", "大寮區", "鳥松區", "林園區", "仁武區", "大社區", "大樹區", "岡山區", "路竹區", "阿蓮區", "田寮區", "燕巢區", "橋頭區", "梓官區", "彌陀區", "永安區", "湖內區", "旗山區", "美濃區", "六龜區", "內門區", "杉林區", "甲仙區", "桃源區", "那瑪夏區", "茂林區", "茄萣區"], "屏東縣": ["屏東市", "潮州鎮", "東港鎮", "恆春鎮", "萬丹鄉", "長治鄉", "麟洛鄉", "九如鄉", "里港鄉", "高樹鄉", "鹽埔鄉", "內埔鄉", "竹田鄉", "竹田鄉", "萬巒鄉", "內埔鄉", "竹田鄉", "新埤鄉", "枋寮鄉", "新園鄉", "崁頂鄉", "林邊鄉", "南州鄉", "佳冬鄉", "琉球鄉", "車城鄉", "滿州鄉", "枋山鄉", "三地門鄉", "霧臺鄉", "瑪家鄉", "泰武鄉", "來義鄉", "春日鄉", "獅子鄉", "牡丹鄉"], "宜蘭縣": ["宜蘭市", "羅東鎮", "蘇澳鎮", "頭城鎮", "礁溪鄉", "壯圍鄉", "員山鄉", "冬山鄉", "五結鄉", "三星鄉", "大同鄉", "南澳鄉"], "花蓮縣": ["花蓮市", "鳳林鎮", "玉里鎮", "新城鄉", "吉安鄉", "壽豐鄉", "光復鄉", "豐濱鄉", "瑞穗鄉", "富里鄉", "秀林鄉", "萬榮鄉", "卓溪鄉"], "臺東縣": ["臺東市", "成功鎮", "關山鎮", "卑南鄉", "鹿野鄉", "池上鄉", "東河鄉", "成功鎮", "長濱鄉", "太麻里鄉", "大武鄉", "綠島鄉", "海端鄉", "延平鄉", "金峰鄉", "達仁鄉", "蘭嶼鄉"]};
+const districtList = {"基隆市":["中正區","七堵區","暖暖區","仁愛區","中山區","安樂區","信義區"],"臺北市":["松山區","信義區","大安區","中山區","中正區","大同區","萬華區","文山區","南港區","內湖區","士林區","北投區"],"新北市":["板橋區","三重區","中和區","永和區","新莊區","新店區","樹林區","鶯歌區","三峽區","淡水區","汐止區","瑞芳區","土城區","蘆洲區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區"],"桃園市":["桃園區","中壢區","大溪區","楊梅區","蘆竹區","大園區","龜山區","八德區","龍潭區","平鎮區","新屋區","觀音區","復興區"],"新竹市":["東區","北區","香山區"],"新竹縣":["竹北市","竹東鎮","新埔鎮","關西鎮","湖口鄉","新豐鄉","芎林鄉","橫山鄉","北埔鄉","寶山鄉","峨眉鄉","尖石鄉","五峰鄉"],"苗栗縣":["苗栗市","苑裡鎮","通霄鎮","竹南鎮","頭份市","後龍鎮","卓蘭鎮","大湖鄉","公館鄉","銅鑼鄉","南庄鄉","頭屋鄉","三義鄉","西湖鄉","造橋鄉","三灣鄉","獅潭鄉","泰安鄉"],"臺中市":["中區","東區","南區","西區","北區","西屯區","南屯區","北屯區","豐原區","東勢區","大甲區","清水區","沙鹿區","梧棲區","后里區","神岡區","潭子區","大雅區","新社區","石岡區","外埔區","大安區","烏日區","大肚區","龍井區","霧峰區","太平區","大里區","和平區"],"彰化縣":["彰化市","鹿港鎮","和美鎮","線西鄉","伸港鄉","福興鄉","秀水鄉","花壇鄉","芬園鄉","員林市","溪湖鎮","田中鎮","大村鄉","埔鹽鄉","埔心鄉","永靖鄉","社頭鄉","二水鄉","北斗鎮","二林鎮","田尾鄉","埤頭鄉","芳苑鄉","大城鄉","竹塘鄉","溪州鄉"],"南投縣":["南投市","埔里鎮","草屯鎮","竹山鎮","集集鎮","名間鄉","鹿谷鄉","中寮鄉","魚池鄉","國姓鄉","水里鄉","信義鄉","仁愛鄉"],"雲林縣":["斗六市","斗南鎮","虎尾鎮","西螺鎮","土庫鎮","北港鎮","古坑鄉","大埤鄉","莿桐鄉","林內鄉","二崙鄉","崙背鄉","麥寮鄉","東勢鄉","褒忠鄉","臺西鄉","元長鄉","四湖鄉","口湖鄉","水林鄉"],"嘉義市":["東區","西區"],"嘉義縣":["太保市","朴子市","布袋鎮","大林鎮","民雄鄉","溪口鄉","新港鄉","六腳鄉","東石鄉","義竹鄉","鹿草鄉","水上鄉","中埔鄉","竹崎鄉","梅山鄉","番路鄉","大埔鄉","阿里山鄉"],"臺南市":["新營區","鹽水區","白河區","柳營區","後壁區","東山區","麻豆區","下營區","六甲區","官田區","大內區","佳里區","學甲區","西港區","七股區","將軍區","北門區","新化區","善化區","新市區","安定區","山上區","玉井區","楠西區","南化區","左鎮區","仁德區","歸仁區","關廟區","龍崎區","永康區","東區","南區","北區","安南區","安平區","中西區"],"高雄市":["鹽埕區","鼓山區","左營區","楠梓區","三民區","新興區","前金區","苓雅區","前鎮區","旗津區","小港區","鳳山區","林園區","大寮區","大樹區","大社區","仁武區","鳥松區","岡山區","橋頭區","燕巢區","田寮區","阿蓮區","路竹區","湖內區","茄萣區","永安區","彌陀區","梓官區","旗山區","美濃區","六龜區","甲仙區","杉林區","內門區","茂林區","桃源區","那瑪夏區"],"屏東縣":["屏東市","潮州鎮","東港鎮","恆春鎮","萬丹鄉","長治鄉","麟洛鄉","九如鄉","里港鄉","鹽埔鄉","高樹鄉","萬巒鄉","內埔鄉","竹田鄉","新埤鄉","枋寮鄉","新園鄉","崁頂鄉","林邊鄉","南州鄉","佳冬鄉","車城鄉","滿州鄉","枋山鄉","三地門鄉","霧臺鄉","瑪家鄉","泰武鄉","來義鄉","春日鄉","獅子鄉","牡丹鄉"],"宜蘭縣":["宜蘭市","羅東鎮","蘇澳鎮","頭城鎮","礁溪鄉","壯圍鄉","員山鄉","冬山鄉","五結鄉","三星鄉","大同鄉","南澳鄉"],"花蓮縣":["花蓮市","鳳林鎮","玉里鎮","新城鄉","吉安鄉","壽豐鄉","光復鄉","豐濱鄉","瑞穗鄉","富里鄉","秀林鄉","萬榮鄉","卓溪鄉"],"臺東縣":["臺東市","成功鎮","關山鎮","卑南鄉","鹿野鄉","池上鄉","東河鄉","長濱鄉","太麻里鄉","大武鄉","海端鄉","延平鄉","金峰鄉","達仁鄉"]};
 
-const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "進里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
+const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "埔里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
 
 const catDefs = [
   {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面',
@@ -667,6 +733,12 @@ function recalc() {
   const grand = city ? Math.max(installTotal, baseFee) : installTotal;
   const area = document.getElementById('breakdownArea');
 
+  if (isRemoteArea()) {
+    setRemoteMode(true);
+    area.innerHTML = '<div class="grand-placeholder">偏遠地區需透過官方 LINE 聯繫專人報價</div>';
+    return;
+  }
+
   if (!cityKey && !hasAnyItem) {
     area.innerHTML = '<div class="grand-placeholder">請先選擇縣市與商品數量</div>';
     return;
@@ -779,19 +851,44 @@ function onDistrictChange(){
     recalc();
 }
 
-function checkRemote(){
+function isRemoteArea(){
     const cityKey=document.getElementById('citySelect').value;
     const districtKey=document.getElementById('districtSelect').value;
+    return !!(cityKey && districtKey && remoteDistricts[cityKey] && remoteDistricts[cityKey].includes(districtKey));
+}
+
+function setRemoteMode(isRemote){
+    const cityKey=document.getElementById('citySelect').value;
+    const districtKey=document.getElementById('districtSelect').value;
+    const panel=document.getElementById('feePanel');
     const remoteNote=document.getElementById('remoteNote');
-    
-    let isRemote = false;
-    if(cityKey && districtKey && remoteDistricts[cityKey]){
-        if(remoteDistricts[cityKey].includes(districtKey)){
-            isRemote = true;
-        }
+    const quoteCard=document.getElementById('remoteQuoteCard');
+    const productCard=document.getElementById('productCard');
+    const summaryCard=document.getElementById('summaryCard');
+    const footnote=document.getElementById('footnote');
+    const areaLabel=document.getElementById('remoteAreaLabel');
+
+    if(remoteNote) remoteNote.style.display = 'none';
+    if(quoteCard) quoteCard.style.display = isRemote ? 'block' : 'none';
+    if(productCard) productCard.style.display = isRemote ? 'none' : 'block';
+    if(summaryCard) summaryCard.style.display = isRemote ? 'none' : 'block';
+    if(footnote) footnote.style.display = isRemote ? 'none' : 'block';
+    if(areaLabel) areaLabel.textContent = cityKey && districtKey ? `已選地區：${cityKey}${districtKey}` : '已選地區：—';
+
+    if(isRemote){
+        if(panel) panel.style.display = 'none';
+        document.getElementById('step1').className = 'step active';
+        document.getElementById('step2').className = 'step';
+        document.getElementById('step3').className = 'step';
+    } else if(cityKey && cityData[cityKey]){
+        if(panel) panel.style.display = 'block';
     }
-    
-    remoteNote.style.display = isRemote ? 'block' : 'none';
+}
+
+function checkRemote(){
+    const isRemote = isRemoteArea();
+    setRemoteMode(isRemote);
+    return isRemote;
 }
 
 const sel=document.getElementById('citySelect');
