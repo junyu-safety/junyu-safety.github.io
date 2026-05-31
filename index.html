@@ -524,6 +524,7 @@
     font-size: 12px;
     color: var(--ink-light);
     line-height: 1.5;
+    white-space: pre-line;
   }
   .secondary-btn {
     min-width: 96px;
@@ -949,9 +950,27 @@ function hasSelectedArea(){
 function hasSelectedItems(){
   return Object.values(qty).some(v => (parseInt(v) || 0) > 0);
 }
+function getMirrorInstallMismatch(){
+  const cat = getMirrorCat();
+  if(!cat) return [];
+  const byKey = Object.fromEntries(cat.items.map(it => [it.key, it]));
+  const mismatches = [];
+  mirrorSizeKeys.forEach(sizeKey => {
+    const sizeQty = qty[sizeKey] || 0;
+    if(sizeQty <= 0) return;
+    const installQty = getMirrorInstallTotal(sizeKey);
+    if(installQty !== sizeQty){
+      const label = byKey[sizeKey] ? byKey[sizeKey].label : '反射鏡';
+      mismatches.push({ label, sizeQty, installQty });
+    }
+  });
+  return mismatches;
+}
 function updateFlowLocks(hasAnyItem){
   const areaReady = hasSelectedArea();
   const itemReady = typeof hasAnyItem === 'boolean' ? hasAnyItem : hasSelectedItems();
+  const mirrorMismatch = getMirrorInstallMismatch();
+  const mirrorReady = mirrorMismatch.length === 0;
   const productCard = document.getElementById('productCard');
   const nextBtn = document.getElementById('nextBtn');
   const nextHint = document.getElementById('nextHint');
@@ -962,10 +981,11 @@ function updateFlowLocks(hasAnyItem){
       el.disabled = !areaReady;
     });
   }
-  if(nextBtn) nextBtn.disabled = !(areaReady && itemReady);
+  if(nextBtn) nextBtn.disabled = !(areaReady && itemReady && mirrorReady);
   if(nextHint){
     if(!areaReady) nextHint.textContent = '請先選擇施工地區';
     else if(!itemReady) nextHint.textContent = '請至少選擇一項施工品項';
+    else if(mirrorMismatch.length > 0) nextHint.textContent = mirrorMismatch.map(item => `${item.label} 已選 ${item.sizeQty} 面，安裝方式需選滿 ${item.sizeQty} 組，目前已選 ${item.installQty} 組`).join('\n');
     else nextHint.textContent = '';
   }
 }
@@ -1461,7 +1481,7 @@ function downloadQuote(){
 }
 
 function showContactStep(){
-    if(!(hasSelectedArea() && hasSelectedItems())){
+    if(!(hasSelectedArea() && hasSelectedItems()) || getMirrorInstallMismatch().length > 0){
         updateFlowLocks();
         return;
     }
@@ -1534,9 +1554,13 @@ catDefs.forEach(cat=>{
 
   const tierBar=document.createElement('div');
   tierBar.className='tier-bar';
-  tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
-    cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('')+
-    `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
+  if(cat.key === 'wheelstop'){
+    tierBar.innerHTML = `<span style="color:var(--ink-light)">計價說明：</span><span style="color:var(--accent);font-weight:500;">優惠級距依單一品項數量分開計算</span>`;
+  } else {
+    tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
+      cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('')+
+      `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
+  }
   body.appendChild(tierBar);
 
   function appendItemRow(target, it, keyOverride, className){
