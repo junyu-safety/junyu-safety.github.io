@@ -173,6 +173,45 @@
 
   .fee-item .fi-label { font-size: 10px; color: var(--ink-muted); letter-spacing: 1px; margin-bottom: 4px; }
   .fee-item .fi-val { font-size: 18px; font-weight: 500; color: var(--accent); font-family: 'Noto Serif TC', serif; }
+  .urgent-option {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: #fffdf9;
+  }
+  .urgent-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .urgent-toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--warn);
+  }
+  .urgent-desc {
+    margin: 6px 0 0 24px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+  }
+  .deadline-panel {
+    display: none;
+    margin-top: 10px;
+    padding-left: 24px;
+  }
+  .deadline-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
   .remote-note {
     display: none;
     margin-top: 10px;
@@ -268,6 +307,31 @@
     align-items: flex-start;
   }
   .service-notes li strong { color: var(--ink); margin-right: 4px; white-space: nowrap; }
+
+
+  .mirror-install-group {
+    display: none;
+    padding: 8px 14px 10px 28px;
+    background: #fbfaf8;
+    border-top: 1px solid var(--rule);
+  }
+  .mirror-install-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+  .mirror-install-status {
+    color: var(--warn);
+    white-space: nowrap;
+  }
+  .mirror-install-row {
+    padding-left: 12px;
+    background: #fff;
+  }
 
   /* Product categories */
   .cat-block {
@@ -423,15 +487,104 @@
   .grand-note { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; line-height: 1.7; text-align: right; }
   .grand-placeholder { font-size: 14px; color: rgba(255,255,255,0.4); padding: 10px 0; text-align: center; }
 
-  .footnote {
+  .next-actions {
     margin-top: 16px;
-    padding: 14px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    font-size: 11px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .primary-btn {
+    min-width: 132px;
+    min-height: 42px;
+    border: 0;
+    border-radius: 3px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .primary-btn:hover { background: #172f4e; }
+  .primary-btn:disabled {
+    background: #b9c0c9;
+    color: rgba(255,255,255,0.75);
+    cursor: not-allowed;
+  }
+  .product-locked {
+    opacity: 0.58;
+  }
+  .product-locked .cat-hdr,
+  .product-locked .qty-btn,
+  .product-locked .qty-inp {
+    cursor: not-allowed;
+  }
+  .flow-hint {
+    margin-right: auto;
+    align-self: center;
+    font-size: 12px;
     color: var(--ink-light);
-    line-height: 2;
+    line-height: 1.5;
+  }
+  .secondary-btn {
+    min-width: 96px;
+    min-height: 42px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .secondary-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-field label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
+  .form-field input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .form-field input:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .selected-site-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .selected-site-chip {
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+  }
+  .form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   @media (max-width: 480px) {
@@ -442,6 +595,12 @@
     .item-row { align-items: flex-start; }
     .item-name { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.45; }
     .select-container { flex-direction: column; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .selected-site-grid { grid-template-columns: 1fr; }
+    .next-actions, .form-actions { justify-content: stretch; }
+    .next-actions { flex-direction: column; gap: 10px; }
+    .flow-hint { margin-right: 0; }
+    .primary-btn, .secondary-btn { width: 100%; }
   }
 </style>
 </head>
@@ -474,7 +633,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="locationCard">
     <div class="card-header">
       <span class="label">Step 1 &nbsp;·&nbsp; 施工地點</span>
     </div>
@@ -502,6 +661,17 @@
             <div class="fi-val" id="urgentFeeVal">—</div>
           </div>
         </div>
+        <div class="urgent-option" id="urgentOption">
+          <label class="urgent-toggle" for="urgentCheck">
+            <input type="checkbox" id="urgentCheck" onchange="onUrgentChange()">
+            <span>需要急件處理</span>
+          </label>
+          <div class="urgent-desc">勾選後，急件加收費將列入估價費用中。</div>
+          <div class="deadline-panel" id="deadlinePanel">
+            <label class="deadline-label" for="deadlineSelect">請選擇日期，最晚將於此日期前或當天內完成施工</label>
+            <select id="deadlineSelect" onchange="recalc()"></select>
+          </div>
+        </div>
         <div class="remote-note" id="remoteNote">
           此施工地點屬偏遠服務區，線上試算不適用。請透過官方 LINE 聯繫專人確認報價。
         </div>
@@ -510,9 +680,9 @@
           <h3>【施工服務說明】</h3>
           <ul>
             <li><strong>● 一般派遣：</strong>自收款次日起算，3 個工作日內確認施工行程，並於 12 個工作日內完成施工。</li>
-            <li><strong>● 急件處理：</strong>如需緊急施工，我方將協助協調廠商進場時間。若經確認可配合客戶指定時間，總費用將以「基本出車費 + 急件加收費」計收。</li>
-            <li><strong>● 標準服務時間：</strong>平日（週一至週五）09:30 - 18:30。</li>
-            <li><strong>● 非工作日加費：</strong>如要求於週末或國定假日施工，經確認可配合後，每趟次將額外酌收 NT$ 1,000 派遣費用。</li>
+            <li><strong>● 急件處理：</strong>如需指定較近的完成期限，請勾選急件處理。我方將協助確認廠商是否可配合排程；經確認可配合後，費用將以本次估價金額+急件加收費計算。</li>
+            <li><strong>● 服務時間：</strong>平日（週一至週五）09:30 - 18:30。</li>
+            
           </ul>
         </div>
       </div>
@@ -546,105 +716,312 @@
     </div>
   </div>
 
-  <div class="footnote" id="footnote">
-    ＊ 此為預估費用，以實際派工單為準。<br>
-    ＊ 急件費為額外加收，是否需急件請直接洽詢。<br>
-    ＊ 偏遠地區、特殊地形或量體較大時，費用可能另計。
+  <div class="next-actions" id="nextActions">
+    <div class="flow-hint" id="nextHint">請先選擇地區並至少選擇一項施工品項</div>
+    <button class="primary-btn" id="nextBtn" type="button" onclick="showContactStep()" disabled>下一步</button>
+  </div>
+
+  <div class="card" id="contactCard" style="display:none;">
+    <div class="card-header">
+      <span class="label">下一步 &nbsp;·&nbsp; 填寫資料</span>
+    </div>
+    <div class="card-body">
+      <div class="contact-grid">
+        <div class="form-field">
+          <label for="taxId">公司統編</label>
+          <input id="taxId" type="text" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="companyName">公司抬頭</label>
+          <input id="companyName" type="text" autocomplete="organization">
+        </div>
+        <div class="form-field">
+          <label for="contactName">聯絡人姓名</label>
+          <input id="contactName" type="text" autocomplete="name">
+        </div>
+        <div class="form-field">
+          <label for="contactPhone">聯絡人電話</label>
+          <input id="contactPhone" type="tel" autocomplete="tel">
+        </div>
+        <div class="form-field full">
+          <label for="siteAddress">施工地點</label>
+          <div class="selected-site-grid">
+            <div class="selected-site-chip" id="selectedCityArea">—</div>
+            <div class="selected-site-chip" id="selectedDistrictArea">—</div>
+          </div>
+          <input id="siteAddress" type="text" autocomplete="street-address" placeholder="詳細地址">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="secondary-btn" type="button" onclick="showQuoteStep()">返回</button>
+        <button class="primary-btn" type="button" onclick="downloadQuote()">申請估價單</button>
+      </div>
+    </div>
   </div>
 
 </div>
 
 <script>
-const cityData = {
-  '臺北市':{base:5500,urgent:5000},
-  '新北市':{base:5500,urgent:5000},
-  '基隆市':{base:7000,urgent:5000},
-  '桃園市':{base:4000,urgent:4500},
-  '新竹縣':{base:3500,urgent:4500},
-  '新竹市':{base:3500,urgent:4000},
-  '苗栗縣':{base:2800,urgent:3500},
-  '臺中市':{base:2100,urgent:3000},
-  '彰化縣':{base:2500,urgent:3000},
-  '南投縣':{base:3500,urgent:3000},
-  '雲林縣':{base:3500,urgent:3000},
-  '嘉義市':{base:4000,urgent:4500},
-  '嘉義縣':{base:4000,urgent:4500},
-  '臺南市':{base:6000,urgent:4500},
-  '高雄市':{base:7300,urgent:5000},
-  '屏東縣':{base:15000,urgent:8000},
-  '宜蘭縣':{base:12000,urgent:8000},
-  '花蓮縣':{base:15000,urgent:8000},
-  '臺東縣':{base:18000,urgent:8000}
-};
+const cityData = {"臺北市":{"base":7500,"urgent":6000},"新北市":{"base":7500,"urgent":6000},"基隆市":{"base":9000,"urgent":6000},"桃園市":{"base":5500,"urgent":5500},"新竹縣":{"base":5000,"urgent":5500},"新竹市":{"base":5000,"urgent":5000},"苗栗縣":{"base":4300,"urgent":4500},"臺中市":{"base":3600,"urgent":4000},"彰化縣":{"base":4000,"urgent":4000},"南投縣":{"base":5000,"urgent":4000},"雲林縣":{"base":5000,"urgent":4000},"嘉義市":{"base":5500,"urgent":5500},"臺南市":{"base":7500,"urgent":5500},"高雄市":{"base":9000,"urgent":6000},"屏東縣":{"base":20000,"urgent":10000},"宜蘭縣":{"base":16000,"urgent":10000},"花蓮縣":{"base":20000,"urgent":10000},"臺東縣":{"base":24000,"urgent":10000}};
+
+
+const districtFeeOverrides = {"南投縣":{"南投市":{"base":4500,"urgent":4000}}};
 
 const districtList = {"基隆市":["中正區","七堵區","暖暖區","仁愛區","中山區","安樂區","信義區"],"臺北市":["松山區","信義區","大安區","中山區","中正區","大同區","萬華區","文山區","南港區","內湖區","士林區","北投區"],"新北市":["板橋區","三重區","中和區","永和區","新莊區","新店區","樹林區","鶯歌區","三峽區","淡水區","汐止區","瑞芳區","土城區","蘆洲區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區"],"桃園市":["桃園區","中壢區","大溪區","楊梅區","蘆竹區","大園區","龜山區","八德區","龍潭區","平鎮區","新屋區","觀音區","復興區"],"新竹市":["東區","北區","香山區"],"新竹縣":["竹北市","竹東鎮","新埔鎮","關西鎮","湖口鄉","新豐鄉","芎林鄉","橫山鄉","北埔鄉","寶山鄉","峨眉鄉","尖石鄉","五峰鄉"],"苗栗縣":["苗栗市","苑裡鎮","通霄鎮","竹南鎮","頭份市","後龍鎮","卓蘭鎮","大湖鄉","公館鄉","銅鑼鄉","南庄鄉","頭屋鄉","三義鄉","西湖鄉","造橋鄉","三灣鄉","獅潭鄉","泰安鄉"],"臺中市":["中區","東區","南區","西區","北區","西屯區","南屯區","北屯區","豐原區","東勢區","大甲區","清水區","沙鹿區","梧棲區","后里區","神岡區","潭子區","大雅區","新社區","石岡區","外埔區","大安區","烏日區","大肚區","龍井區","霧峰區","太平區","大里區","和平區"],"彰化縣":["彰化市","鹿港鎮","和美鎮","線西鄉","伸港鄉","福興鄉","秀水鄉","花壇鄉","芬園鄉","員林市","溪湖鎮","田中鎮","大村鄉","埔鹽鄉","埔心鄉","永靖鄉","社頭鄉","二水鄉","北斗鎮","二林鎮","田尾鄉","埤頭鄉","芳苑鄉","大城鄉","竹塘鄉","溪州鄉"],"南投縣":["南投市","埔里鎮","草屯鎮","竹山鎮","集集鎮","名間鄉","鹿谷鄉","中寮鄉","魚池鄉","國姓鄉","水里鄉","信義鄉","仁愛鄉"],"雲林縣":["斗六市","斗南鎮","虎尾鎮","西螺鎮","土庫鎮","北港鎮","古坑鄉","大埤鄉","莿桐鄉","林內鄉","二崙鄉","崙背鄉","麥寮鄉","東勢鄉","褒忠鄉","臺西鄉","元長鄉","四湖鄉","口湖鄉","水林鄉"],"嘉義市":["東區","西區"],"嘉義縣":["太保市","朴子市","布袋鎮","大林鎮","民雄鄉","溪口鄉","新港鄉","六腳鄉","東石鄉","義竹鄉","鹿草鄉","水上鄉","中埔鄉","竹崎鄉","梅山鄉","番路鄉","大埔鄉","阿里山鄉"],"臺南市":["新營區","鹽水區","白河區","柳營區","後壁區","東山區","麻豆區","下營區","六甲區","官田區","大內區","佳里區","學甲區","西港區","七股區","將軍區","北門區","新化區","善化區","新市區","安定區","山上區","玉井區","楠西區","南化區","左鎮區","仁德區","歸仁區","關廟區","龍崎區","永康區","東區","南區","北區","安南區","安平區","中西區"],"高雄市":["鹽埕區","鼓山區","左營區","楠梓區","三民區","新興區","前金區","苓雅區","前鎮區","旗津區","小港區","鳳山區","林園區","大寮區","大樹區","大社區","仁武區","鳥松區","岡山區","橋頭區","燕巢區","田寮區","阿蓮區","路竹區","湖內區","茄萣區","永安區","彌陀區","梓官區","旗山區","美濃區","六龜區","甲仙區","杉林區","內門區","茂林區","桃源區","那瑪夏區"],"屏東縣":["屏東市","潮州鎮","東港鎮","恆春鎮","萬丹鄉","長治鄉","麟洛鄉","九如鄉","里港鄉","鹽埔鄉","高樹鄉","萬巒鄉","內埔鄉","竹田鄉","新埤鄉","枋寮鄉","新園鄉","崁頂鄉","林邊鄉","南州鄉","佳冬鄉","車城鄉","滿州鄉","枋山鄉","三地門鄉","霧臺鄉","瑪家鄉","泰武鄉","來義鄉","春日鄉","獅子鄉","牡丹鄉"],"宜蘭縣":["宜蘭市","羅東鎮","蘇澳鎮","頭城鎮","礁溪鄉","壯圍鄉","員山鄉","冬山鄉","五結鄉","三星鄉","大同鄉","南澳鄉"],"花蓮縣":["花蓮市","鳳林鎮","玉里鎮","新城鄉","吉安鄉","壽豐鄉","光復鄉","豐濱鄉","瑞穗鄉","富里鄉","秀林鄉","萬榮鄉","卓溪鄉"],"臺東縣":["臺東市","成功鎮","關山鎮","卑南鄉","鹿野鄉","池上鄉","東河鄉","長濱鄉","太麻里鄉","大武鄉","海端鄉","延平鄉","金峰鄉","達仁鄉"]};
 
 const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區"], "臺北市": ["北投區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "新北市": ["萬里區", "金山區", "平溪區", "雙溪區", "貢寮區", "坪林區", "烏來區", "三芝區", "石門區", "石碇區"], "桃園市": ["復興區", "大溪區"], "新竹縣": ["尖石鄉", "五峰鄉", "橫山鄉"], "苗栗縣": ["卓蘭鎮", "獅潭鄉", "南庄鄉", "泰安鄉", "大湖鄉"], "臺中市": ["和平區", "東勢區", "新社區"], "南投縣": ["中寮鄉", "國姓鄉", "埔里鎮", "仁愛鄉", "水里鄉", "魚池鄉", "信義鄉", "鹿谷鄉", "集集鎮"], "雲林縣": ["古坑鄉", "褒忠鄉", "東勢鄉", "臺西鄉", "麥寮鄉", "二崙鄉", "北港鎮", "水林鄉", "口湖鄉", "四湖鄉", "元長鄉"], "嘉義縣": ["竹崎鄉", "阿里山鄉", "中埔鄉", "大埔鄉"], "臺南市": ["左鎮區", "玉井區", "楠西區", "南化區", "龍崎區", "大內區", "七股區", "將軍區", "北門區", "白河區", "東山區"], "高雄市": ["田寮區", "六龜區", "甲仙區", "那瑪夏區", "桃源區", "茂林區"], "屏東縣": ["恆春鎮", "滿州鄉", "泰武鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "瑪家鄉", "高樹鄉", "三地門鄉"], "宜蘭縣": ["三星鄉", "冬山鄉", "蘇澳鎮", "南澳鄉", "大同鄉", "頭城鎮"]};
 
-const catDefs = [
-  {key:'mirror',label:'反射鏡',tierBreaks:[3,10],tierLabels:['3面以下','4–10面','11面以上'],unit:'面',
-   items:[
-    {key:'sg60',label:'60公分',prices:[1500,1200,1000]},
-    {key:'sg80',label:'80公分',prices:[1500,1200,1000]},
-    {key:'sg100',label:'100公分',prices:[1500,1200,1000]},
-    {key:'m-wall',label:'壁掛安裝',prices:[300,250,200]},
-    {key:'m-yas',label:'錏管+四方底座 (立)(含料)',prices:[1800,1700,1600],unit:'組'},
-    {key:'m-yab',label:'錏管(埋)(含料)',prices:[1800,1700,1600],unit:'組'},
-    {key:'m-gzs',label:'鍍鋅管+四方底座 (立)(含料)',prices:[2150,2050,1900],unit:'組'},
-    {key:'m-gzb',label:'鍍鋅管(埋)',prices:[2150,2050,1900],unit:'組'},
-    {key:'m-tape',label:'黃黑反光貼紙(含料)一米長',prices:[250,200,150],unit:'米'},
-  ]},
-  {key:'wheelstop',label:'車輪檔',tierBreaks:[50,200],tierLabels:['50顆以下','51–200顆','201顆以上'],unit:'顆',
-   items:[
-    {key:'ws-al',label:'鋁合金車輪檔',prices:[150,120,100]},
-    {key:'ws-pl',label:'塑膠車輪檔',prices:[150,120,100]},
-    {key:'ws-rb',label:'橡膠車輪擋',prices:[225,185,160]},
-    {key:'ws-pv',label:'PVC車輪檔',prices:[180,150,130]},
-    {key:'ws-as',label:'柏油路面加強',prices:[75,65,50]},
-    {key:'ws-r1',label:'一般車擋拆除',prices:[125,100,75]},
-    {key:'ws-r2',label:'螺絲隱藏車擋拆除',prices:[200,165,125]},
-  ]},
-  {key:'barrier',label:'防撞桿',tierBreaks:[50,150],tierLabels:['50支以下','51–150支','151支以上'],unit:'支',
-   items:[
-    {key:'br-pe',label:'PE防撞桿',prices:[150,125,100]},
-    {key:'br-ev',label:'EVA防撞桿',prices:[150,125,100]},
-    {key:'br-pu',label:'PU防撞桿',prices:[150,125,100]},
-    {key:'br-gd',label:'防護桿',prices:[200,165,140]},
-    {key:'br-ch',label:'塑膠鍊條',prices:[135,128,120],unit:'條'},
-    {key:'br-tw',label:'U型護欄（台製 100×30cm）',prices:[1350,1300,1220],unit:'個'},
-    {key:'br-cn',label:'U型護欄（陸製 100×30cm）',prices:[1180,1140,1090],unit:'個'},
-  ]},
-  {key:'speedbump',label:'減速墊',tierBreaks:[30,100],tierLabels:['15米以下','15–50米','50米以上'],unit:'塊',
-   items:[
-    {key:'sb-25',label:'橡膠 50×50×2.5cm',prices:[525,475,400]},
-    {key:'sb-35',label:'橡膠 50×50×3.5cm',prices:[525,475,400]},
-    {key:'sb-5', label:'橡膠 50×50×5cm', prices:[525,475,400]},
-    {key:'sb-rm',label:'舊減速墊回收',prices:[300,300,300],unit:'米',flat:true},
-  ]},
-  {key:'edgeguard',label:'護邊條',tierBreaks:[50,150],tierLabels:['50條以下','51–150條','151條以上'],unit:'條',
-   items:[
-    {key:'eg-pv',label:'PVC彩紋防撞條',prices:[150,120,100]},
-    {key:'eg-pu',label:'PU護邊條',prices:[120,100,100]},
-    {key:'eg-al',label:'螢光鋁邊條',prices:[150,120,100]},
-    {key:'eg-rb',label:'橡膠護邊條',prices:[150,120,100]},
-  ]},
-];
+const catDefs = [{"key":"mirror","label":"反射鏡","tierBreaks":[3,10,20],"tierLabels":["3面以下","4–10面","11–20面","21面以上"],"unit":"面","items":[{"key":"sg60","label":"60公分","prices":[1800,1500,1300,1200]},{"key":"sg80","label":"80公分","prices":[1800,1500,1300,1200]},{"key":"sg100","label":"100公分","prices":[1800,1500,1300,1200]},{"key":"m-wall","label":"壁掛安裝","prices":[500,450,400,350]},{"key":"m-pole-clamp","label":"電線桿夾具安裝(含料)","prices":[500,450,400,350],"unit":"組"},{"key":"m-yas","label":"錏管+四方底座 (立)(含料)","prices":[2300,2100,2000,1950],"unit":"組"},{"key":"m-yab","label":"錏管(埋)(含料)","prices":[2300,2100,2000,1950],"unit":"組"},{"key":"m-gzs","label":"鍍鋅管+四方底座 (立)(含料)","prices":[2400,2300,2100,2000],"unit":"組"},{"key":"m-gzb","label":"鍍鋅管(埋)","prices":[2400,2300,2100,2000],"unit":"組"},{"key":"m-tape","label":"黃黑反光貼紙(含料)一米長","prices":[350,350,300,300],"unit":"米"},{"key":"m-clean","label":"反射鏡清運","prices":[450,450,450,450],"flat":true}]},{"key":"wheelstop","label":"車輪檔","tierBreaks":[50,200,1000],"tierLabels":["50顆以下","51–200顆","201–1000顆","1001顆以上"],"unit":"顆","items":[{"key":"ws-al","label":"鋁合金車輪檔","prices":[200,170,140,120]},{"key":"ws-pl","label":"塑膠車輪檔","prices":[200,170,140,120]},{"key":"ws-rb","label":"橡膠車輪擋","prices":[280,240,210,190]},{"key":"ws-pv","label":"PVC車輪檔","prices":[230,200,180,150]},{"key":"ws-remove","label":"車擋拆除","prices":[170,145,115,100]},{"key":"ws-recycle-pa","label":"舊車檔回收(塑膠、鋁合金、PVC)","prices":[60,60,60,60],"flat":true},{"key":"ws-recycle-rb","label":"舊車檔回收(橡膠)","prices":[150,150,150,150],"flat":true}]},{"key":"barrier","label":"防撞桿","tierBreaks":[50,150,300],"tierLabels":["50支以下","51–150支","151–300支","301支以上"],"unit":"支","items":[{"key":"br-pe","label":"PE防撞桿","prices":[220,190,150,130]},{"key":"br-ev","label":"EVA防撞桿","prices":[220,190,150,130]},{"key":"br-pu","label":"PU防撞桿","prices":[220,190,150,130]},{"key":"br-gd","label":"防護桿","prices":[250,220,200,170]},{"key":"br-ch","label":"塑膠鍊條(含料)","prices":[160,155,150,150],"unit":"條"},{"key":"br-remove","label":"防撞(護)桿拆除","prices":[190,150,125,110]},{"key":"br-recycle","label":"防撞(護)桿清運","prices":[50,50,50,50],"flat":true},{"key":"br-tw","label":"台/100*30 U型護欄(含料)","prices":[1800,1700,1600,1500],"unit":"個"},{"key":"br-cn","label":"陸/100*30 U型護欄(含料)","prices":[1400,1350,1300,1250],"unit":"個"},{"key":"br-u-remove","label":"U型護欄拆除","prices":[400,300,280,240],"unit":"個"},{"key":"br-u-recycle","label":"U型護欄清運","prices":[70,70,70,70],"unit":"個","flat":true}]},{"key":"speedbump","label":"減速墊","tierBreaks":[15,50],"tierLabels":["15米以下","16–50米","51米以上"],"unit":"塊","items":[{"key":"sb-25","label":"橡膠 50*50*2.5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-35","label":"橡膠 50*50*3.5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-5","label":"橡膠 50*50*5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-remove","label":"拆除費用","prices":[500,470,430],"unit":"米","tierBreaks":[15,50]},{"key":"sb-clean","label":"清運費用","prices":[360,360,360],"unit":"米","flat":true}]},{"key":"edgeguard","label":"護邊條","tierBreaks":[50,150,1000],"tierLabels":["50條以下","51–150條","151–1000條","1001條以上"],"unit":"條","items":[{"key":"eg-pv","label":"PVC彩紋防撞條","prices":[200,160,130,100]},{"key":"eg-pu","label":"PU護邊條","prices":[200,160,130,100]},{"key":"eg-al","label":"螢光鋁邊條","prices":[200,160,130,100]},{"key":"eg-rb","label":"橡膠護邊條","prices":[200,160,130,100]},{"key":"eg-remove","label":"拆除費用","prices":[150,140,125,110]},{"key":"eg-clean","label":"清運費用","prices":[70,70,70,70],"flat":true}]}];
 
 const qty = {};
 
+function pad2(n){ return String(n).padStart(2, '0'); }
+function formatDeadlineValue(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function formatDeadlineLabel(d){
+  const weeks = ['日','一','二','三','四','五','六'];
+  return `${d.getFullYear()}/${pad2(d.getMonth()+1)}/${pad2(d.getDate())}（週${weeks[d.getDay()]}）`;
+}
+function buildDeadlineOptions(){
+  const sel = document.getElementById('deadlineSelect');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '';
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  for (let i = 1; i <= 9; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const opt = document.createElement('option');
+    opt.value = formatDeadlineValue(d);
+    opt.textContent = formatDeadlineLabel(d);
+    sel.appendChild(opt);
+  }
+  if (current) sel.value = current;
+  if (!sel.value && sel.options.length > 0) sel.selectedIndex = 0;
+}
+function isUrgentSelected(){
+  const urgentCheck = document.getElementById('urgentCheck');
+  return !!(urgentCheck && urgentCheck.checked);
+}
+function getUrgentDeadlineText(){
+  const sel = document.getElementById('deadlineSelect');
+  return sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].textContent : '';
+}
+function onUrgentChange(){
+  const panel = document.getElementById('deadlinePanel');
+  const checked = isUrgentSelected();
+  if (checked) buildDeadlineOptions();
+  if (panel) panel.style.display = checked ? 'block' : 'none';
+  recalc();
+}
+
+const mirrorSizeKeys = ['sg60','sg80','sg100'];
+const mirrorInstallKeys = ['m-wall','m-pole-clamp','m-yas','m-yab','m-gzs','m-gzb'];
+function isMirrorSizeKey(key){ return mirrorSizeKeys.includes(key); }
+function isMirrorInstallKey(key){ return key.includes('__'); }
+function mirrorInstallQtyKey(sizeKey, methodKey){ return `${sizeKey}__${methodKey}`; }
+function splitMirrorInstallKey(key){
+  const parts = key.split('__');
+  return parts.length === 2 ? {sizeKey: parts[0], methodKey: parts[1]} : null;
+}
+function getMirrorCat(){ return catDefs.find(cat => cat.key === 'mirror'); }
+function getMirrorInstallItems(){
+  const cat = getMirrorCat();
+  return cat ? cat.items.filter(it => mirrorInstallKeys.includes(it.key)) : [];
+}
+function getMirrorInstallTotal(sizeKey){
+  return getMirrorInstallItems().reduce((sum, it) => sum + (qty[mirrorInstallQtyKey(sizeKey, it.key)] || 0), 0);
+}
+function syncQtyInput(key){
+  const inp = document.getElementById('inp-' + key);
+  if(inp) inp.value = qty[key] || 0;
+}
+function trimMirrorInstallQty(sizeKey){
+  let extra = getMirrorInstallTotal(sizeKey) - (qty[sizeKey] || 0);
+  if(extra <= 0) return;
+  const methods = getMirrorInstallItems().slice().reverse();
+  methods.forEach(it => {
+    if(extra <= 0) return;
+    const key = mirrorInstallQtyKey(sizeKey, it.key);
+    const current = qty[key] || 0;
+    const cut = Math.min(current, extra);
+    qty[key] = current - cut;
+    extra -= cut;
+    syncQtyInput(key);
+  });
+}
+function getMirrorBreakdownItems(cat){
+  const rows = [];
+  const byKey = Object.fromEntries(cat.items.map(it => [it.key, it]));
+  mirrorSizeKeys.forEach(sizeKey => {
+    const sizeItem = byKey[sizeKey];
+    const sizeQty = qty[sizeKey] || 0;
+    if(sizeItem && sizeQty > 0){
+      const sizeTier = getTier(getQtyForTier(sizeQty, sizeItem), sizeItem.tierBreaks || cat.tierBreaks);
+      const sizeUnit = sizeItem.unit || cat.unit;
+      rows.push({ label: sizeItem.label, q: sizeQty, unit: sizeUnit, up: sizeItem.prices[sizeTier] });
+      getMirrorInstallItems().forEach(method => {
+        const methodKey = mirrorInstallQtyKey(sizeKey, method.key);
+        const q = qty[methodKey] || 0;
+        if(q > 0){
+          const tier = method.flat ? 0 : getTier(getQtyForTier(q, method), method.tierBreaks || cat.tierBreaks);
+          rows.push({ label: `${sizeItem.label} - ${method.label}`, q, unit: method.unit || cat.unit, up: method.prices[tier] });
+        }
+      });
+    }
+  });
+  cat.items.filter(it => !mirrorSizeKeys.includes(it.key) && !mirrorInstallKeys.includes(it.key)).forEach(it => {
+    const q = qty[it.key] || 0;
+    if(q > 0){
+      const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
+      rows.push({ label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] });
+    }
+  });
+  return rows;
+}
+function getSelectedBreakdownItems(cat){
+  if(cat.key === 'mirror') return getMirrorBreakdownItems(cat);
+  return cat.items.filter(it => (qty[it.key] || 0) > 0).map(it => {
+    const q = qty[it.key];
+    const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
+    return { label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] };
+  });
+}
+function updateMirrorInstallUi(cat){
+  const byKey = Object.fromEntries(cat.items.map(it => [it.key, it]));
+  mirrorSizeKeys.forEach(sizeKey => {
+    const sizeQty = qty[sizeKey] || 0;
+    const group = document.getElementById('mirror-install-group-' + sizeKey);
+    const status = document.getElementById('mirror-install-status-' + sizeKey);
+    if(group) group.style.display = sizeQty > 0 ? 'block' : 'none';
+    const selected = getMirrorInstallTotal(sizeKey);
+    if(status) status.textContent = sizeQty > 0 ? `已選 ${selected} / ${sizeQty}` : '';
+    getMirrorInstallItems().forEach(method => {
+      const key = mirrorInstallQtyKey(sizeKey, method.key);
+      const q = qty[key] || 0;
+      const tier = method.flat ? 0 : getTier(getQtyForTier(q, method), method.tierBreaks || cat.tierBreaks);
+      const up = method.prices[tier];
+      const unit = method.unit || cat.unit;
+      const upEl = document.getElementById('up-' + key);
+      const subEl = document.getElementById('sub-' + key);
+      const hintBox = document.getElementById('hint-' + key);
+      if(upEl) upEl.innerHTML = `NT$${up.toLocaleString('zh-TW')} / ${unit}`;
+      if(hintBox) hintBox.innerText = '';
+      if(subEl){
+        subEl.textContent = q > 0 ? fmt(q * up) : '';
+        subEl.className = 'item-sub' + (q > 0 ? ' has-val' : '');
+      }
+    });
+  });
+}
+
 function fmt(n){ return 'NT$ ' + Math.round(n).toLocaleString('zh-TW'); }
-function getTier(t,b){ return t<=b[0]?0:t<=b[1]?1:2; }
+function getQtyForTier(q, it){
+  return it.meterFactor ? q * it.meterFactor : q;
+}
+function getSpeedbumpInstallQty(){
+  const cat = catDefs.find(c => c.key === 'speedbump');
+  if(!cat) return 0;
+  return cat.items.filter(it => it.meterFactor).reduce((sum, it) => sum + (qty[it.key] || 0), 0);
+}
+function getSpeedbumpInstallMeters(){ return getSpeedbumpInstallQty() * 0.5; }
+function getCategoryDisplayQty(cat, catQtyTotal){
+  if(cat.key === 'speedbump') return getSpeedbumpInstallQty();
+  return catQtyTotal;
+}
+function getCategoryDisplaySuffix(cat){
+  if(cat.key === 'speedbump') return `（${getSpeedbumpInstallMeters().toFixed(1)} 米）`;
+  return '';
+}
+function getTier(t,b){
+  for (let i = 0; i < b.length; i++) {
+    if (t <= b[i]) return i;
+  }
+  return b.length;
+}
 
 // --- 核心修改 1：商品數量獨立判定級距 ---
+function hasSelectedArea(){
+  const cityKey=document.getElementById('citySelect').value;
+  const districtKey=document.getElementById('districtSelect').value;
+  return !!(cityKey && districtKey && getSelectedFee());
+}
+function hasSelectedItems(){
+  return Object.values(qty).some(v => (parseInt(v) || 0) > 0);
+}
+function updateFlowLocks(hasAnyItem){
+  const areaReady = hasSelectedArea();
+  const itemReady = typeof hasAnyItem === 'boolean' ? hasAnyItem : hasSelectedItems();
+  const productCard = document.getElementById('productCard');
+  const nextBtn = document.getElementById('nextBtn');
+  const nextHint = document.getElementById('nextHint');
+
+  if(productCard){
+    productCard.classList.toggle('product-locked', !areaReady);
+    productCard.querySelectorAll('.qty-btn, .qty-inp').forEach(el => {
+      el.disabled = !areaReady;
+    });
+  }
+  if(nextBtn) nextBtn.disabled = !(areaReady && itemReady);
+  if(nextHint){
+    if(!areaReady) nextHint.textContent = '請先選擇施工地區';
+    else if(!itemReady) nextHint.textContent = '請至少選擇一項施工品項';
+    else nextHint.textContent = '';
+  }
+}
+function getSelectedFee(){
+  const cityKey=document.getElementById('citySelect').value;
+  const districtKey=document.getElementById('districtSelect').value;
+  if(cityKey && districtKey && districtFeeOverrides[cityKey] && districtFeeOverrides[cityKey][districtKey]){
+    return districtFeeOverrides[cityKey][districtKey];
+  }
+  return cityData[cityKey];
+}
+function updateFeeDisplay(){
+  const cityKey=document.getElementById('citySelect').value;
+  const panel=document.getElementById('feePanel');
+  const fee=getSelectedFee();
+  if(cityKey && fee){
+    panel.style.display='block';
+    document.getElementById('baseFeeVal').textContent=fmt(fee.base);
+    document.getElementById('urgentFeeVal').textContent=fmt(fee.urgent);
+  } else if(panel) {
+    panel.style.display='none';
+  }
+}
+
 function calcCat(cat) {
   let total = 0;
   let catQtyTotal = 0;
-  
+
+  if(cat.key === 'mirror'){
+    const byKey = Object.fromEntries(cat.items.map(it => [it.key, it]));
+    mirrorSizeKeys.forEach(sizeKey => {
+      const sizeItem = byKey[sizeKey];
+      const sizeQty = qty[sizeKey] || 0;
+      if(sizeItem && sizeQty > 0){
+        catQtyTotal += sizeQty;
+        const sizeTier = getTier(getQtyForTier(sizeQty, sizeItem), sizeItem.tierBreaks || cat.tierBreaks);
+        total += sizeQty * sizeItem.prices[sizeTier];
+        getMirrorInstallItems().forEach(method => {
+          const methodQty = qty[mirrorInstallQtyKey(sizeKey, method.key)] || 0;
+          const tier = method.flat ? 0 : getTier(methodQty, method.tierBreaks || cat.tierBreaks);
+          total += methodQty * method.prices[tier];
+        });
+      }
+    });
+    cat.items.filter(it => !mirrorSizeKeys.includes(it.key) && !mirrorInstallKeys.includes(it.key)).forEach(it => {
+      const q = qty[it.key] || 0;
+      const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
+      total += q * it.prices[tier];
+    });
+    return { total, catQtyTotal };
+  }
+
   cat.items.forEach(it => {
     const q = qty[it.key] || 0;
-    if (!it.flat) catQtyTotal += q;
-    // 獨立以該項目的購買量 (q) 取級距
-    const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
+    if (!it.flat && !it.tierBreaks) catQtyTotal += q;
+    const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
     total += q * it.prices[tier];
   });
 
@@ -666,9 +1043,10 @@ function recalc() {
     // 更新類別標頭文字
     const tierInfo = document.getElementById('tier-info-' + cat.key);
     if (tierInfo) {
-      if (catQtyTotal > 0) {
-        const mLabel = cat.key === 'speedbump' ? `（${(catQtyTotal * 0.5).toFixed(1)} 米）` : '';
-        tierInfo.textContent = `已選 ${catQtyTotal} ${cat.unit}${mLabel}`;
+      const displayQty = getCategoryDisplayQty(cat, catQtyTotal);
+      if (displayQty > 0) {
+        const mLabel = getCategoryDisplaySuffix(cat);
+        tierInfo.textContent = `已選 ${displayQty} ${cat.unit}${mLabel}`;
       } else { tierInfo.textContent = ''; }
     }
 
@@ -680,7 +1058,7 @@ function recalc() {
     // 單個品項價格變色與湊單提示
     cat.items.forEach(it => {
       const q = qty[it.key] || 0;
-      const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
+      const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
       const up = it.prices[tier];
       const unit = it.unit || cat.unit;
 
@@ -697,9 +1075,10 @@ function recalc() {
           upEl.innerHTML = `NT$${it.prices[0].toLocaleString('zh-TW')} / ${unit}`;
           // 湊單提示 (只差 5 單位以內才顯示)
           if (hintBox) {
-            const gap = cat.tierBreaks[0] + 1 - q;
-            if (q > 0 && gap > 0 && gap <= 5 && !it.flat) {
-              hintBox.innerText = `再加 ${gap} ${unit}即享優惠價`;
+            const tierBreaks = it.tierBreaks || cat.tierBreaks;
+            const gap = tierBreaks[0] + 1 - getQtyForTier(q, it);
+            if (q > 0 && gap > 0 && gap <= 5 && !it.flat && !it.meterFactor) {
+              hintBox.innerText = `再加 ${Math.ceil(gap)} ${unit}即享優惠價`;
             } else {
               hintBox.innerText = "";
             }
@@ -715,6 +1094,7 @@ function recalc() {
       }
 
       // 費率分級標籤 (只要該類別中有任一商品享有該級距即可點亮)
+      if(cat.key === 'mirror' && !mirrorSizeKeys.includes(it.key)) return;
       cat.tierLabels.forEach((_, i) => {
         const el = document.getElementById(`tier-tag-${cat.key}-${i}`);
         if (el) {
@@ -724,14 +1104,19 @@ function recalc() {
         }
       });
     });
+    if(cat.key === 'mirror') updateMirrorInstallUi(cat);
   });
 
   // 渲染 Step 3 費用明細（展開所有品項、數量與單價）
   const cityKey = document.getElementById('citySelect').value;
-  const city = cityData[cityKey];
+  const city = getSelectedFee();
   const baseFee = city ? city.base : 0;
-  const grand = city ? Math.max(installTotal, baseFee) : installTotal;
+  const serviceTotal = city ? Math.max(installTotal, baseFee) : installTotal;
+  const urgentSelected = !!(city && isUrgentSelected());
+  const urgentFee = urgentSelected ? city.urgent : 0;
+  const grand = serviceTotal + urgentFee;
   const area = document.getElementById('breakdownArea');
+  updateFlowLocks(hasAnyItem);
 
   if (isRemoteArea()) {
     setRemoteMode(true);
@@ -752,27 +1137,29 @@ function recalc() {
                <span>基本出車費（${cityKey}）</span>
                <span class="br-amt">${fmt(baseFee)}</span>
              </div>`;
+    if (urgentSelected) {
+      const deadlineText = getUrgentDeadlineText();
+      html += `<div class="breakdown-row base-fee">
+                 <span>急件加收費${deadlineText ? `（完成期限：${deadlineText}）` : ''}</span>
+                 <span class="br-amt">${fmt(urgentFee)}</span>
+               </div>`;
+    }
   } else {
     html += `<div class="breakdown-row" style="margin-bottom:10px;"><span style="color:rgba(255,255,255,0.4)">尚未選擇縣市</span></div>`;
   }
 
   // 逐個大類展開其底下有選購的單項明細
   catDefs.forEach(cat => {
-    const selectedItems = cat.items.filter(it => (qty[it.key] || 0) > 0);
+    const selectedItems = getSelectedBreakdownItems(cat);
     
     if (selectedItems.length > 0) {
       html += `<div class="breakdown-group">
                  <div class="breakdown-group-title">${cat.label} 施工明細</div>`;
                  
-      selectedItems.forEach(it => {
-        const q = qty[it.key];
-        const tier = it.flat ? 0 : getTier(q, cat.tierBreaks);
-        const up = it.prices[tier];
-        const unit = it.unit || cat.unit;
-        
+      selectedItems.forEach(row => {
         html += `<div class="breakdown-row item-detail">
-                   <span>${it.label} (${q}${unit} × ${up.toLocaleString()})</span>
-                   <span class="br-amt">${fmt(q * up)}</span>
+                   <span>${row.label} (${row.q}${row.unit} × ${row.up.toLocaleString()})</span>
+                   <span class="br-amt">${fmt(row.q * row.up)}</span>
                  </div>`;
       });
       html += `</div>`;
@@ -780,10 +1167,11 @@ function recalc() {
   });
 
   // 最終加總提示文字
-  const noteText = !city ? '請選擇施工縣市以計算最終費用' :
+  let noteText = !city ? '請選擇施工縣市以計算最終費用' :
     !hasAnyItem ? '請選擇需施工的商品與數量' :
     installTotal < baseFee ? `細項總計 ${fmt(installTotal)} 未達基本出車費，以出車費計收` :
     `細項總計 ${fmt(installTotal)}，已高於基本出車費`;
+  if (urgentSelected) noteText += `；已加計急件費 ${fmt(urgentFee)}`;
 
   html += `<div class="grand-row">
     <span class="grand-label">預估總費用</span>
@@ -799,13 +1187,33 @@ function recalc() {
 }
 
 function changeQty(key,delta){
-  qty[key]=Math.max(0,(qty[key]||0)+delta);
-  const inp=document.getElementById('inp-'+key);
-  if(inp) inp.value=qty[key];
+  if(!hasSelectedArea()) return;
+  const oldVal = qty[key] || 0;
+  let next = Math.max(0, oldVal + delta);
+  const mirrorPart = splitMirrorInstallKey(key);
+  if(mirrorPart && delta > 0){
+    const max = qty[mirrorPart.sizeKey] || 0;
+    if(getMirrorInstallTotal(mirrorPart.sizeKey) >= max) return;
+  }
+  qty[key]=next;
+  if(isMirrorSizeKey(key)) trimMirrorInstallQty(key);
+  syncQtyInput(key);
   recalc();
 }
 function inputQty(key,val){
-  qty[key]=Math.max(0,parseInt(val)||0);
+  if(!hasSelectedArea()){
+    syncQtyInput(key);
+    return;
+  }
+  let next = Math.max(0,parseInt(val)||0);
+  const mirrorPart = splitMirrorInstallKey(key);
+  if(mirrorPart){
+    const otherTotal = getMirrorInstallTotal(mirrorPart.sizeKey) - (qty[key] || 0);
+    next = Math.min(next, Math.max(0, (qty[mirrorPart.sizeKey] || 0) - otherTotal));
+  }
+  qty[key]=next;
+  if(isMirrorSizeKey(key)) trimMirrorInstallQty(key);
+  syncQtyInput(key);
   recalc();
 }
 function toggleCat(key){
@@ -831,13 +1239,7 @@ function onCityChange(){
       opt.textContent = d;
       distSelect.appendChild(opt);
     });
-    
-    const d=cityData[cityKey];
-    if(d){
-        panel.style.display='block';
-        document.getElementById('baseFeeVal').textContent=fmt(d.base);
-        document.getElementById('urgentFeeVal').textContent=fmt(d.urgent);
-    }
+    updateFeeDisplay();
   } else {
     distSelect.innerHTML = '<option value="">請先選擇縣市…</option>';
     panel.style.display='none';
@@ -847,6 +1249,7 @@ function onCityChange(){
 }
 
 function onDistrictChange(){
+    updateFeeDisplay();
     checkRemote();
     recalc();
 }
@@ -865,14 +1268,16 @@ function setRemoteMode(isRemote){
     const quoteCard=document.getElementById('remoteQuoteCard');
     const productCard=document.getElementById('productCard');
     const summaryCard=document.getElementById('summaryCard');
-    const footnote=document.getElementById('footnote');
+    const nextActions=document.getElementById('nextActions');
+    const contactCard=document.getElementById('contactCard');
     const areaLabel=document.getElementById('remoteAreaLabel');
 
     if(remoteNote) remoteNote.style.display = 'none';
     if(quoteCard) quoteCard.style.display = isRemote ? 'block' : 'none';
     if(productCard) productCard.style.display = isRemote ? 'none' : 'block';
     if(summaryCard) summaryCard.style.display = isRemote ? 'none' : 'block';
-    if(footnote) footnote.style.display = isRemote ? 'none' : 'block';
+    if(nextActions) nextActions.style.display = isRemote ? 'none' : 'flex';
+    if(contactCard && isRemote) contactCard.style.display = 'none';
     if(areaLabel) areaLabel.textContent = cityKey && districtKey ? `已選地區：${cityKey}${districtKey}` : '已選地區：—';
 
     if(isRemote){
@@ -880,9 +1285,217 @@ function setRemoteMode(isRemote){
         document.getElementById('step1').className = 'step active';
         document.getElementById('step2').className = 'step';
         document.getElementById('step3').className = 'step';
-    } else if(cityKey && cityData[cityKey]){
-        if(panel) panel.style.display = 'block';
+    } else if(cityKey && getSelectedFee()){
+        updateFeeDisplay();
     }
+}
+
+function updateSelectedSiteArea(){
+    const cityKey=document.getElementById('citySelect').value;
+    const districtKey=document.getElementById('districtSelect').value;
+    const selectedCityArea=document.getElementById('selectedCityArea');
+    const selectedDistrictArea=document.getElementById('selectedDistrictArea');
+    if(selectedCityArea) selectedCityArea.textContent = cityKey || '—';
+    if(selectedDistrictArea) selectedDistrictArea.textContent = districtKey || '—';
+}
+
+function escapeHtml(value){
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[ch]));
+}
+
+function getContactData(){
+    const cityKey=document.getElementById('citySelect').value;
+    const districtKey=document.getElementById('districtSelect').value;
+    return {
+        taxId: document.getElementById('taxId').value.trim(),
+        companyName: document.getElementById('companyName').value.trim(),
+        contactName: document.getElementById('contactName').value.trim(),
+        contactPhone: document.getElementById('contactPhone').value.trim(),
+        city: cityKey,
+        district: districtKey,
+        detailAddress: document.getElementById('siteAddress').value.trim()
+    };
+}
+
+function validateContactData(data){
+    const required = [
+        ['taxId', '公司統編'],
+        ['companyName', '公司抬頭'],
+        ['contactName', '聯絡人姓名'],
+        ['contactPhone', '聯絡人電話'],
+        ['detailAddress', '詳細地址']
+    ];
+    const missing = required.find(([key]) => !data[key]);
+    if(!missing) return true;
+    alert(`請填寫${missing[1]}`);
+    const targetId = missing[0] === 'detailAddress' ? 'siteAddress' : missing[0];
+    const target = document.getElementById(targetId);
+    if(target) target.focus();
+    return false;
+}
+
+function getQuoteDetails(){
+    const city = getSelectedFee();
+    const baseFee = city ? city.base : 0;
+    let itemSubtotal = 0;
+    const groups = [];
+
+    catDefs.forEach(cat => {
+        const rows = getSelectedBreakdownItems(cat);
+        if(rows.length > 0){
+            groups.push({ label: cat.label, rows });
+            rows.forEach(row => itemSubtotal += row.q * row.up);
+        }
+    });
+
+    const serviceTotal = city ? Math.max(itemSubtotal, baseFee) : itemSubtotal;
+    const urgentFee = city && isUrgentSelected() ? city.urgent : 0;
+    const untaxedTotal = serviceTotal + urgentFee;
+    return {
+        baseFee,
+        itemSubtotal,
+        serviceTotal,
+        urgentFee,
+        untaxedTotal,
+        taxedTotal: Math.round(untaxedTotal * 1.05),
+        groups
+    };
+}
+
+function buildQuoteHtml(data, quote){
+    const deadlineRow = isUrgentSelected()
+        ? `<div><span>施工日期</span><strong>${escapeHtml(getUrgentDeadlineText())}</strong></div>`
+        : '';
+    const itemRows = quote.groups.map(group => `
+      <tr class="group"><td colspan="5">${escapeHtml(group.label)} 施工明細</td></tr>
+      ${group.rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.label)}</td>
+          <td class="num">${escapeHtml(row.q)}</td>
+          <td>${escapeHtml(row.unit)}</td>
+          <td class="num">NT$ ${Math.round(row.up).toLocaleString('zh-TW')}</td>
+          <td class="num">NT$ ${Math.round(row.q * row.up).toLocaleString('zh-TW')}</td>
+        </tr>
+      `).join('')}
+    `).join('');
+    const baseNote = quote.itemSubtotal < quote.baseFee
+        ? `<tr><td colspan="4">基本出車費計收</td><td class="num">NT$ ${Math.round(quote.baseFee).toLocaleString('zh-TW')}</td></tr>`
+        : '';
+    const urgentRow = quote.urgentFee > 0
+        ? `<tr><td colspan="4">急件加收費</td><td class="num">NT$ ${Math.round(quote.urgentFee).toLocaleString('zh-TW')}</td></tr>`
+        : '';
+
+    return `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>施工估價單</title>
+<style>
+  body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;margin:32px;background:#f7f4ef;}
+  .quote{max-width:860px;margin:0 auto;background:#fff;border:1px solid #e0dbd3;padding:32px;}
+  h1{margin:0 0 24px;color:#1e3a5f;font-size:24px;letter-spacing:2px;}
+  h2{margin:28px 0 12px;color:#1e3a5f;font-size:15px;border-bottom:1px solid #e0dbd3;padding-bottom:8px;}
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;}
+  .info div{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:8px 0;}
+  .info span{color:#666;}
+  table{width:100%;border-collapse:collapse;margin-top:12px;}
+  th,td{border:1px solid #e0dbd3;padding:10px;text-align:left;font-size:13px;}
+  th{background:#e8eef5;color:#1e3a5f;}
+  .group td{background:#f7f4ef;font-weight:700;color:#1e3a5f;}
+  .num{text-align:right;white-space:nowrap;}
+  .totals{margin-top:18px;margin-left:auto;width:min(360px,100%);}
+  .total-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e0dbd3;}
+  .total-row.final{font-size:18px;font-weight:700;color:#1e3a5f;}
+  @media print{body{background:#fff;margin:0}.quote{border:0}}
+</style>
+</head>
+<body>
+<div class="quote">
+  <h1>施工估價單</h1>
+  <h2>客戶資料</h2>
+  <div class="info">
+    ${deadlineRow}
+    <div><span>公司統編</span><strong>${escapeHtml(data.taxId)}</strong></div>
+    <div><span>公司抬頭</span><strong>${escapeHtml(data.companyName)}</strong></div>
+    <div><span>聯絡人姓名</span><strong>${escapeHtml(data.contactName)}</strong></div>
+    <div><span>聯絡人電話</span><strong>${escapeHtml(data.contactPhone)}</strong></div>
+    <div><span>施工地點</span><strong>${escapeHtml(data.city)} ${escapeHtml(data.district)} ${escapeHtml(data.detailAddress)}</strong></div>
+  </div>
+  <h2>估價明細</h2>
+  <table>
+    <thead><tr><th>項目名稱</th><th>數量</th><th>單位</th><th>單價</th><th>金額</th></tr></thead>
+    <tbody>
+      ${itemRows}
+      <tr><td colspan="4">施工項目小計</td><td class="num">NT$ ${Math.round(quote.itemSubtotal).toLocaleString('zh-TW')}</td></tr>
+      ${baseNote}
+      ${urgentRow}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="total-row"><span>未稅總額</span><strong>NT$ ${Math.round(quote.untaxedTotal).toLocaleString('zh-TW')}</strong></div>
+    <div class="total-row final"><span>含稅總額</span><strong>NT$ ${quote.taxedTotal.toLocaleString('zh-TW')}</strong></div>
+  </div>
+</div>
+</body>
+</html>`;
+}
+
+function downloadQuote(){
+    const data = getContactData();
+    if(!validateContactData(data)) return;
+    const quote = getQuoteDetails();
+    const html = buildQuoteHtml(data, quote);
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const today = new Date();
+    const stamp = `${today.getFullYear()}${pad2(today.getMonth()+1)}${pad2(today.getDate())}`;
+    link.href = url;
+    link.download = `施工估價單_${stamp}.html`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+function showContactStep(){
+    if(!(hasSelectedArea() && hasSelectedItems())){
+        updateFlowLocks();
+        return;
+    }
+    const locationCard=document.getElementById('locationCard');
+    const productCard=document.getElementById('productCard');
+    const summaryCard=document.getElementById('summaryCard');
+    const nextActions=document.getElementById('nextActions');
+    const contactCard=document.getElementById('contactCard');
+    updateSelectedSiteArea();
+    if(locationCard) locationCard.style.display='none';
+    if(productCard) productCard.style.display='none';
+    if(summaryCard) summaryCard.style.display='none';
+    if(nextActions) nextActions.style.display='none';
+    if(contactCard) contactCard.style.display='block';
+    document.getElementById('step1').className = 'step';
+    document.getElementById('step2').className = 'step';
+    document.getElementById('step3').className = 'step active';
+    if(contactCard) contactCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showQuoteStep(){
+    if(checkRemote()) return;
+    const locationCard=document.getElementById('locationCard');
+    const productCard=document.getElementById('productCard');
+    const summaryCard=document.getElementById('summaryCard');
+    const nextActions=document.getElementById('nextActions');
+    const contactCard=document.getElementById('contactCard');
+    if(locationCard) locationCard.style.display='block';
+    if(productCard) productCard.style.display='block';
+    if(summaryCard) summaryCard.style.display='block';
+    if(nextActions) nextActions.style.display='flex';
+    if(contactCard) contactCard.style.display='none';
+    recalc();
+    if(summaryCard) summaryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function checkRemote(){
@@ -926,31 +1539,52 @@ catDefs.forEach(cat=>{
     `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
   body.appendChild(tierBar);
 
-  cat.items.forEach(it=>{
+  function appendItemRow(target, it, keyOverride, className){
+    const key = keyOverride || it.key;
     const unit=it.unit||cat.unit;
     const row=document.createElement('div');
-    row.className='item-row';
+    row.className=className || 'item-row';
     row.innerHTML=`
       <div class="item-info">
         <div class="item-name" title="${it.label}">${it.label}</div>
-        <div class="item-unit-price" id="up-${it.key}">NT$— / ${unit}</div>
-        <div id="hint-${it.key}" class="hint-tag"></div>
+        <div class="item-unit-price" id="up-${key}">NT$— / ${unit}</div>
+        <div id="hint-${key}" class="hint-tag"></div>
       </div>
       <div class="qty-wrap">
-        <button class="qty-btn" onclick="changeQty('${it.key}',-1)">−</button>
-        <input class="qty-inp" id="inp-${it.key}" type="number" min="0" value="0"
-          oninput="inputQty('${it.key}',this.value)" onchange="inputQty('${it.key}',this.value)">
-        <button class="qty-btn" onclick="changeQty('${it.key}',1)">+</button>
+        <button class="qty-btn" onclick="changeQty('${key}',-1)">−</button>
+        <input class="qty-inp" id="inp-${key}" type="number" min="0" value="0"
+          oninput="inputQty('${key}',this.value)" onchange="inputQty('${key}',this.value)">
+        <button class="qty-btn" onclick="changeQty('${key}',1)">+</button>
       </div>
-      <div class="item-sub" id="sub-${it.key}"></div>
+      <div class="item-sub" id="sub-${key}"></div>
     `;
-    body.appendChild(row);
-  });
+    target.appendChild(row);
+  }
+
+  if(cat.key === 'mirror'){
+    const mirrorInstallItems = cat.items.filter(it => mirrorInstallKeys.includes(it.key));
+    cat.items.filter(it => mirrorSizeKeys.includes(it.key)).forEach(sizeItem => {
+      appendItemRow(body, sizeItem);
+      const group=document.createElement('div');
+      group.className='mirror-install-group';
+      group.id='mirror-install-group-' + sizeItem.key;
+      group.innerHTML=`<div class="mirror-install-title">
+        <span>${sizeItem.label} 安裝方式</span>
+        <span class="mirror-install-status" id="mirror-install-status-${sizeItem.key}"></span>
+      </div>`;
+      mirrorInstallItems.forEach(method => appendItemRow(group, method, mirrorInstallQtyKey(sizeItem.key, method.key), 'item-row mirror-install-row'));
+      body.appendChild(group);
+    });
+    cat.items.filter(it => !mirrorSizeKeys.includes(it.key) && !mirrorInstallKeys.includes(it.key)).forEach(it=>appendItemRow(body, it));
+  } else {
+    cat.items.forEach(it=>appendItemRow(body, it));
+  }
 
   section.appendChild(body);
   container.appendChild(section);
 });
 
+updateFlowLocks(false);
 recalc();
 </script>
 </body>
