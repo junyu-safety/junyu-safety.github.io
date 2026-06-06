@@ -384,7 +384,6 @@
     color: var(--ink-muted);
     transition: all 0.2s;
   }
-  .tier-tag.active { background: var(--accent); color: #fff; }
 
   .item-row {
     display: flex; align-items: center;
@@ -394,8 +393,72 @@
   }
   .item-row:last-child { border-bottom: none; }
   .item-info { flex: 1; min-width: 0; }
-  .item-name { font-size: 13px; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.45; overflow-wrap: anywhere; }
+  .item-name {
+    font-size: 13px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
   .item-unit-price { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .preview-btn {
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 10px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+  }
+  .preview-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    background: rgba(0,0,0,0.45);
+  }
+  .preview-dialog {
+    width: min(520px, 100%);
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    box-shadow: 0 -12px 36px rgba(0,0,0,0.24);
+  }
+  .preview-dialog img {
+    width: 100%;
+    max-height: 62vh;
+    object-fit: contain;
+    background: #f2f0eb;
+    display: block;
+  }
+  .preview-dialog-body { padding: 16px 18px 18px; }
+  .preview-dialog-title { font-size: 17px; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+  .preview-dialog-note { font-size: 12px; color: var(--ink-muted); line-height: 1.7; }
+  .preview-close {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
   
   /* 視覺提醒樣式 */
   .discount-tag { color: var(--urgent-red); font-weight: 700; margin-left: 4px; }
@@ -762,6 +825,17 @@
 
 </div>
 
+<div class="preview-modal" id="productPreviewModal" onclick="closeProductPreview()">
+  <div class="preview-dialog" onclick="event.stopPropagation()">
+    <button class="preview-close" type="button" onclick="closeProductPreview()">×</button>
+    <img id="productPreviewImage" src="" alt="">
+    <div class="preview-dialog-body">
+      <div class="preview-dialog-title" id="productPreviewTitle"></div>
+      <div class="preview-dialog-note" id="productPreviewNote"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const cityData = {"臺北市":{"base":7500,"urgent":6000},"新北市":{"base":7500,"urgent":6000},"基隆市":{"base":9000,"urgent":6000},"桃園市":{"base":5500,"urgent":5500},"新竹縣":{"base":5000,"urgent":5500},"新竹市":{"base":5000,"urgent":5000},"苗栗縣":{"base":4300,"urgent":4500},"臺中市":{"base":3600,"urgent":4000},"彰化縣":{"base":4000,"urgent":4000},"南投縣":{"base":5000,"urgent":4000},"雲林縣":{"base":5000,"urgent":4000},"嘉義市":{"base":5500,"urgent":5500},"臺南市":{"base":7500,"urgent":5500},"高雄市":{"base":9000,"urgent":6000},"屏東縣":{"base":20000,"urgent":10000},"宜蘭縣":{"base":16000,"urgent":10000},"花蓮縣":{"base":20000,"urgent":10000},"臺東縣":{"base":24000,"urgent":10000}};
 
@@ -825,6 +899,24 @@ function splitMirrorInstallKey(key){
   const parts = key.split('__');
   return parts.length === 2 ? {sizeKey: parts[0], methodKey: parts[1]} : null;
 }
+const productPreviewMap = {
+  'm-yab': {
+    title: '錏管(埋)(含料)',
+    note: '埋管安裝示意圖',
+    image: 'file:///C:/Users/sasa0/OneDrive/%E6%A1%8C%E9%9D%A2/%E5%9F%8B%E7%AE%A1%E5%AE%89%E8%A3%9D%E7%A4%BA%E6%84%8F%E5%9C%96.jpg'
+  },
+  'm-gzb': {
+    title: '鍍鋅管(埋)',
+    note: '埋管安裝示意圖',
+    image: 'file:///C:/Users/sasa0/OneDrive/%E6%A1%8C%E9%9D%A2/%E5%9F%8B%E7%AE%A1%E5%AE%89%E8%A3%9D%E7%A4%BA%E6%84%8F%E5%9C%96.jpg'
+  },
+  'm-wall': {
+    title: '壁掛安裝',
+    note: '壁掛安裝示意圖',
+    image: 'file:///C:/Users/sasa0/OneDrive/%E6%A1%8C%E9%9D%A2/%E5%A3%81%E6%8E%9B%E5%AE%89%E8%A3%9D%E7%A4%BA%E6%84%8F%E5%9C%96.jpg'
+  }
+};
+
 function getMirrorCat(){ return catDefs.find(cat => cat.key === 'mirror'); }
 function getMirrorInstallItems(){
   const cat = getMirrorCat();
@@ -1060,16 +1152,6 @@ function recalc() {
         hasAnyItem = true;
     }
 
-    // 更新類別標頭文字
-    const tierInfo = document.getElementById('tier-info-' + cat.key);
-    if (tierInfo) {
-      const displayQty = getCategoryDisplayQty(cat, catQtyTotal);
-      if (displayQty > 0) {
-        const mLabel = getCategoryDisplaySuffix(cat);
-        tierInfo.textContent = `已選 ${displayQty} ${cat.unit}${mLabel}`;
-      } else { tierInfo.textContent = ''; }
-    }
-
     const hdrEl = document.getElementById('cathdr-' + cat.key);
     if (hdrEl) hdrEl.className = 'cat-hdr' + (total > 0 ? ' has-items' : '');
     const catSubEl = document.getElementById('catsubtotal-' + cat.key);
@@ -1113,16 +1195,6 @@ function recalc() {
         subEl.className = 'item-sub' + (sub > 0 ? ' has-val' : '');
       }
 
-      // 費率分級標籤 (只要該類別中有任一商品享有該級距即可點亮)
-      if(cat.key === 'mirror' && !mirrorSizeKeys.includes(it.key)) return;
-      cat.tierLabels.forEach((_, i) => {
-        const el = document.getElementById(`tier-tag-${cat.key}-${i}`);
-        if (el) {
-          const isReached = q > 0 && i === tier;
-          if (isReached) el.classList.add('active');
-          else if (catQtyTotal === 0) el.classList.remove('active');
-        }
-      });
     });
     if(cat.key === 'mirror') updateMirrorInstallUi(cat);
   });
@@ -1236,6 +1308,30 @@ function inputQty(key,val){
   syncQtyInput(key);
   recalc();
 }
+function getProductPreviewControl(key){
+  const mirrorPart = splitMirrorInstallKey(key);
+  const preview = mirrorPart ? productPreviewMap[mirrorPart.methodKey] : productPreviewMap[key];
+  if(!preview) return '';
+  return `<button class="preview-btn" type="button" onclick="event.stopPropagation();openProductPreview('${mirrorPart ? mirrorPart.methodKey : key}')" aria-label="預覽${escapeHtml(preview.title)}圖片">圖片</button>`;
+}
+
+function openProductPreview(previewKey){
+  const preview = productPreviewMap[previewKey];
+  if(!preview) return;
+  const modal = document.getElementById('productPreviewModal');
+  const image = document.getElementById('productPreviewImage');
+  image.src = preview.image;
+  image.alt = preview.title;
+  document.getElementById('productPreviewTitle').textContent = preview.title;
+  document.getElementById('productPreviewNote').textContent = preview.note;
+  if(modal) modal.style.display = 'flex';
+}
+
+function closeProductPreview(){
+  const modal = document.getElementById('productPreviewModal');
+  if(modal) modal.style.display = 'none';
+}
+
 function toggleCat(key){
   const body=document.getElementById('catbody-'+key);
   const arrow=document.getElementById('arrow-'+key);
@@ -1554,13 +1650,8 @@ catDefs.forEach(cat=>{
 
   const tierBar=document.createElement('div');
   tierBar.className='tier-bar';
-  if(cat.key === 'wheelstop'){
-    tierBar.innerHTML = `<span style="color:var(--ink-light)">計價說明：</span><span style="color:var(--accent);font-weight:500;">優惠級距依單一品項數量分開計算</span>`;
-  } else {
-    tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
-      cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('')+
-      `<span id="tier-info-${cat.key}" style="margin-left:4px;color:var(--gold);font-size:11px;"></span>`;
-  }
+  tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
+    cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('');
   body.appendChild(tierBar);
 
   function appendItemRow(target, it, keyOverride, className){
@@ -1570,7 +1661,7 @@ catDefs.forEach(cat=>{
     row.className=className || 'item-row';
     row.innerHTML=`
       <div class="item-info">
-        <div class="item-name" title="${it.label}">${it.label}</div>
+        <div class="item-name" title="${it.label}"><span>${it.label}</span>${getProductPreviewControl(key)}</div>
         <div class="item-unit-price" id="up-${key}">NT$— / ${unit}</div>
         <div id="hint-${key}" class="hint-tag"></div>
       </div>
