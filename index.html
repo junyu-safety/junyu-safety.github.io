@@ -1558,6 +1558,7 @@ function buildQuoteHtml(data, quote){
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>施工估價單</title>
 <style>
   body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;margin:32px;background:#f7f4ef;}
@@ -1611,57 +1612,69 @@ function buildQuoteHtml(data, quote){
 </html>`;
 }
 
+function extractQuoteDocument(html){
+    const parsed = new DOMParser().parseFromString(html, 'text/html');
+    const styleText = Array.from(parsed.querySelectorAll('style')).map(style => style.textContent).join('\n');
+    const quoteEl = parsed.querySelector('.quote');
+    return { styleText, quoteHtml: quoteEl ? quoteEl.outerHTML : '' };
+}
+
 function downloadQuotePdf(html, filename){
     return new Promise((resolve, reject) => {
         if(!window.html2pdf){
             reject(new Error('PDF 套件尚未載入完成，請確認網路後重新點選申請估價單'));
             return;
         }
-        const iframe = document.createElement('iframe');
-        iframe.style.position = 'fixed';
-        iframe.style.left = '-9999px';
-        iframe.style.top = '0';
-        iframe.style.width = '900px';
-        iframe.style.height = '1200px';
-        iframe.style.border = '0';
-        document.body.appendChild(iframe);
-
-        try{
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(html);
-            doc.close();
-        }catch(error){
-            iframe.remove();
-            reject(error);
+        const quoteDoc = extractQuoteDocument(html);
+        if(!quoteDoc.quoteHtml){
+            reject(new Error('估價單內容產生失敗，請重新操作一次'));
             return;
         }
 
+        const host = document.createElement('div');
+        host.style.position = 'fixed';
+        host.style.left = '0';
+        host.style.top = '0';
+        host.style.width = '794px';
+        host.style.minHeight = '1123px';
+        host.style.background = '#ffffff';
+        host.style.opacity = '0.01';
+        host.style.pointerEvents = 'none';
+        host.style.zIndex = '-1';
+        host.innerHTML = `<style>${quoteDoc.styleText}</style>${quoteDoc.quoteHtml}`;
+        document.body.appendChild(host);
+
+        const quoteEl = host.querySelector('.quote');
+        quoteEl.style.maxWidth = 'none';
+        quoteEl.style.width = '794px';
+        quoteEl.style.boxSizing = 'border-box';
+
         setTimeout(() => {
-            const quoteEl = iframe.contentDocument && iframe.contentDocument.querySelector('.quote');
-            if(!quoteEl){
-                iframe.remove();
-                reject(new Error('估價單內容產生失敗，請重新操作一次'));
-                return;
-            }
             const options = {
                 margin: [8, 8, 8, 8],
                 filename,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    windowWidth: 794,
+                    scrollX: 0,
+                    scrollY: 0
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             window.html2pdf().set(options).from(quoteEl).save()
                 .then(() => {
-                    iframe.remove();
+                    host.remove();
                     resolve();
                 })
                 .catch(error => {
-                    iframe.remove();
+                    host.remove();
                     reject(error);
                 });
-        }, 250);
+        }, 300);
     });
 }
 
