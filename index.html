@@ -1561,21 +1561,28 @@ function buildQuoteHtml(data, quote){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>施工估價單</title>
 <style>
-  body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;margin:32px;background:#f7f4ef;}
-  .quote{max-width:860px;margin:0 auto;background:#fff;border:1px solid #e0dbd3;padding:32px;}
-  h1{margin:0 0 24px;color:#1e3a5f;font-size:24px;letter-spacing:2px;}
-  h2{margin:28px 0 12px;color:#1e3a5f;font-size:15px;border-bottom:1px solid #e0dbd3;padding-bottom:8px;}
-  .info{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;}
-  .info div{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:8px 0;}
-  .info span{color:#666;}
-  table{width:100%;border-collapse:collapse;margin-top:12px;}
-  th,td{border:1px solid #e0dbd3;padding:10px;text-align:left;font-size:13px;}
+  *{box-sizing:border-box;}
+  body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;margin:0;background:#fff;}
+  .quote{width:700px;margin:0 auto;background:#fff;border:1px solid #e0dbd3;padding:24px;}
+  h1{margin:0 0 22px;color:#1e3a5f;font-size:24px;letter-spacing:2px;}
+  h2{margin:24px 0 12px;color:#1e3a5f;font-size:15px;border-bottom:1px solid #e0dbd3;padding-bottom:8px;}
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;}
+  .info div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #eee;padding:8px 0;min-width:0;}
+  .info span{color:#666;white-space:nowrap;}
+  .info strong{text-align:right;overflow-wrap:anywhere;}
+  table{width:100%;border-collapse:collapse;margin-top:12px;table-layout:fixed;}
+  th,td{border:1px solid #e0dbd3;padding:8px;text-align:left;font-size:12px;overflow-wrap:anywhere;}
   th{background:#e8eef5;color:#1e3a5f;}
+  th:nth-child(1),td:nth-child(1){width:34%;}
+  th:nth-child(2),td:nth-child(2){width:13%;}
+  th:nth-child(3),td:nth-child(3){width:13%;}
+  th:nth-child(4),td:nth-child(4){width:20%;}
+  th:nth-child(5),td:nth-child(5){width:20%;}
   .group td{background:#f7f4ef;font-weight:700;color:#1e3a5f;}
-  .num{text-align:right;white-space:nowrap;}
-  .totals{margin-top:18px;margin-left:auto;width:min(360px,100%);}
-  .total-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e0dbd3;}
-  .total-row.final{font-size:18px;font-weight:700;color:#1e3a5f;}
+  .num{text-align:right;white-space:normal;}
+  .totals{margin-top:18px;margin-left:auto;width:min(320px,100%);}
+  .total-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e0dbd3;}
+  .total-row.final{font-size:17px;font-weight:700;color:#1e3a5f;}
   tr,.info div{page-break-inside:avoid;}
   @media print{body{background:#fff;margin:0}.quote{border:0}}
 </style>
@@ -1635,8 +1642,8 @@ function downloadQuotePdf(html, filename){
         host.style.position = 'fixed';
         host.style.left = '0';
         host.style.top = '0';
-        host.style.width = '794px';
-        host.style.minHeight = '1123px';
+        host.style.width = '700px';
+        host.style.minHeight = '990px';
         host.style.background = '#ffffff';
         host.style.opacity = '0.01';
         host.style.pointerEvents = 'none';
@@ -1646,7 +1653,7 @@ function downloadQuotePdf(html, filename){
 
         const quoteEl = host.querySelector('.quote');
         quoteEl.style.maxWidth = 'none';
-        quoteEl.style.width = '794px';
+        quoteEl.style.width = '700px';
         quoteEl.style.boxSizing = 'border-box';
 
         setTimeout(() => {
@@ -1658,7 +1665,7 @@ function downloadQuotePdf(html, filename){
                     scale: 2,
                     useCORS: true,
                     backgroundColor: '#ffffff',
-                    windowWidth: 794,
+                    windowWidth: 700,
                     scrollX: 0,
                     scrollY: 0
                 },
