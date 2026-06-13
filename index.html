@@ -667,6 +667,7 @@
     .primary-btn, .secondary-btn { width: 100%; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
@@ -1574,6 +1575,7 @@ function buildQuoteHtml(data, quote){
   .totals{margin-top:18px;margin-left:auto;width:min(360px,100%);}
   .total-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e0dbd3;}
   .total-row.final{font-size:18px;font-weight:700;color:#1e3a5f;}
+  tr,.info div{page-break-inside:avoid;}
   @media print{body{background:#fff;margin:0}.quote{border:0}}
 </style>
 </head>
@@ -1609,22 +1611,61 @@ function buildQuoteHtml(data, quote){
 </html>`;
 }
 
-function downloadQuote(){
+function downloadQuotePdf(html, filename){
+    return new Promise((resolve, reject) => {
+        if(!window.html2pdf){
+            reject(new Error('PDF 套件尚未載入完成，請確認網路後重新點選申請估價單'));
+            return;
+        }
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.left = '-9999px';
+        iframe.style.top = '0';
+        iframe.style.width = '900px';
+        iframe.style.height = '1200px';
+        iframe.style.border = '0';
+        iframe.onload = () => {
+            const quoteEl = iframe.contentDocument && iframe.contentDocument.querySelector('.quote');
+            if(!quoteEl){
+                iframe.remove();
+                reject(new Error('估價單內容產生失敗，請重新操作一次'));
+                return;
+            }
+            const options = {
+                margin: [8, 8, 8, 8],
+                filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            };
+            window.html2pdf().set(options).from(quoteEl).save()
+                .then(() => {
+                    iframe.remove();
+                    resolve();
+                })
+                .catch(error => {
+                    iframe.remove();
+                    reject(error);
+                });
+        };
+        document.body.appendChild(iframe);
+        iframe.srcdoc = html;
+    });
+}
+
+async function downloadQuote(){
     const data = getContactData();
     if(!validateContactData(data)) return;
     const quote = getQuoteDetails();
     const html = buildQuoteHtml(data, quote);
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
     const today = new Date();
     const stamp = `${today.getFullYear()}${pad2(today.getMonth()+1)}${pad2(today.getDate())}`;
-    link.href = url;
-    link.download = `施工估價單_${stamp}.html`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    try{
+        await downloadQuotePdf(html, `施工估價單_${stamp}.pdf`);
+    }catch(error){
+        alert(error && error.message ? error.message : 'PDF 產生失敗，請稍後再試');
+    }
 }
 
 function showContactStep(){
