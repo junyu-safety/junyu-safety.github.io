@@ -656,8 +656,42 @@
     .fee-grid { grid-template-columns: 1fr 1fr; }
     .grand-val { font-size: 22px; }
     .step-line { width: 24px; }
-    .item-row { align-items: flex-start; }
-    .item-name { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.45; }
+    .item-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 10px 8px;
+      padding: 12px;
+    }
+    .item-info {
+      grid-column: 1 / -1;
+      width: 100%;
+      min-width: 0;
+    }
+    .item-name {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.45;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    .preview-btn { flex: 0 0 auto; }
+    .qty-wrap {
+      grid-column: 1;
+      justify-self: start;
+    }
+    .item-sub {
+      grid-column: 2;
+      justify-self: end;
+      align-self: center;
+      min-width: 0;
+      max-width: 100%;
+    }
     .select-container { flex-direction: column; }
     .contact-grid { grid-template-columns: 1fr; }
     .selected-site-grid { grid-template-columns: 1fr; }
