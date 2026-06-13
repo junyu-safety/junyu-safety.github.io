@@ -667,7 +667,8 @@
     .primary-btn, .secondary-btn { width: 100%; }
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
@@ -1530,170 +1531,204 @@ function getQuoteDetails(){
     };
 }
 
-function buildQuoteHtml(data, quote){
-    const deadlineRow = isUrgentSelected()
-        ? `<div><span>施工日期</span><strong>${escapeHtml(getUrgentDeadlineText())}</strong></div>`
-        : '';
-    const altPhoneRow = data.contactPhoneAlt ? `<div><span>備用聯絡電話</span><strong>${escapeHtml(data.contactPhoneAlt)}</strong></div>` : '';
-    const itemRows = quote.groups.map(group => `
-      <tr class="group"><td colspan="5">${escapeHtml(group.label)} 施工明細</td></tr>
-      ${group.rows.map(row => `
-        <tr>
-          <td>${escapeHtml(row.label)}</td>
-          <td class="num">${escapeHtml(row.q)}</td>
-          <td>${escapeHtml(row.unit)}</td>
-          <td class="num">NT$ ${Math.round(row.up).toLocaleString('zh-TW')}</td>
-          <td class="num">NT$ ${Math.round(row.q * row.up).toLocaleString('zh-TW')}</td>
-        </tr>
-      `).join('')}
-    `).join('');
-    const baseNote = quote.itemSubtotal < quote.baseFee
-        ? `<tr><td colspan="4">基本出車費計收</td><td class="num">NT$ ${Math.round(quote.baseFee).toLocaleString('zh-TW')}</td></tr>`
-        : '';
-    const urgentRow = quote.urgentFee > 0
-        ? `<tr><td colspan="4">急件加收費</td><td class="num">NT$ ${Math.round(quote.urgentFee).toLocaleString('zh-TW')}</td></tr>`
-        : '';
+const QUOTE_PDF_FONT_URL = 'https://raw.githubusercontent.com/justfont/open-huninn-font/master/font/jf-openhuninn-2.1.ttf';
+let quotePdfFontPromise = null;
 
-    return `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>施工估價單</title>
-<style>
-  *{box-sizing:border-box;}
-  body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;margin:0;background:#fff;}
-  .quote{width:700px;margin:0 auto;background:#fff;border:1px solid #e0dbd3;padding:24px;}
-  h1{margin:0 0 22px;color:#1e3a5f;font-size:24px;letter-spacing:2px;}
-  h2{margin:24px 0 12px;color:#1e3a5f;font-size:15px;border-bottom:1px solid #e0dbd3;padding-bottom:8px;}
-  .info{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;}
-  .info div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #eee;padding:8px 0;min-width:0;}
-  .info span{color:#666;white-space:nowrap;}
-  .info strong{text-align:right;overflow-wrap:anywhere;}
-  table{width:100%;border-collapse:collapse;margin-top:12px;table-layout:fixed;}
-  th,td{border:1px solid #e0dbd3;padding:8px;text-align:left;font-size:12px;overflow-wrap:anywhere;}
-  th{background:#e8eef5;color:#1e3a5f;}
-  th:nth-child(1),td:nth-child(1){width:34%;}
-  th:nth-child(2),td:nth-child(2){width:13%;}
-  th:nth-child(3),td:nth-child(3){width:13%;}
-  th:nth-child(4),td:nth-child(4){width:20%;}
-  th:nth-child(5),td:nth-child(5){width:20%;}
-  .group td{background:#f7f4ef;font-weight:700;color:#1e3a5f;}
-  .num{text-align:right;white-space:normal;}
-  .totals{margin-top:18px;margin-left:auto;width:min(320px,100%);}
-  .total-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e0dbd3;}
-  .total-row.final{font-size:17px;font-weight:700;color:#1e3a5f;}
-  tr,.info div{page-break-inside:avoid;}
-  @media print{body{background:#fff;margin:0}.quote{border:0}}
-</style>
-</head>
-<body>
-<div class="quote">
-  <h1>施工估價單</h1>
-  <h2>客戶資料</h2>
-  <div class="info">
-    ${deadlineRow}
-    <div><span>公司統編</span><strong>${escapeHtml(data.taxId)}</strong></div>
-    <div><span>公司抬頭</span><strong>${escapeHtml(data.companyName)}</strong></div>
-    <div><span>聯絡人姓名</span><strong>${escapeHtml(data.contactName)}</strong></div>
-    <div><span>聯絡人電話</span><strong>${escapeHtml(data.contactPhone)}</strong></div>
-    ${altPhoneRow}
-    <div><span>施工地點</span><strong>${escapeHtml(data.city)} ${escapeHtml(data.district)} ${escapeHtml(data.detailAddress)}</strong></div>
-  </div>
-  <h2>估價明細</h2>
-  <table>
-    <thead><tr><th>項目名稱</th><th>數量</th><th>單位</th><th>單價</th><th>金額</th></tr></thead>
-    <tbody>
-      ${itemRows}
-      <tr><td colspan="4">施工項目小計</td><td class="num">NT$ ${Math.round(quote.itemSubtotal).toLocaleString('zh-TW')}</td></tr>
-      ${baseNote}
-      ${urgentRow}
-    </tbody>
-  </table>
-  <div class="totals">
-    <div class="total-row"><span>未稅總額</span><strong>NT$ ${Math.round(quote.untaxedTotal).toLocaleString('zh-TW')}</strong></div>
-    <div class="total-row final"><span>含稅總額</span><strong>NT$ ${quote.taxedTotal.toLocaleString('zh-TW')}</strong></div>
-  </div>
-</div>
-</body>
-</html>`;
+function arrayBufferToBase64(buffer){
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for(let i = 0; i < bytes.length; i += 0x8000){
+        const chunk = bytes.subarray(i, i + 0x8000);
+        binary += String.fromCharCode.apply(null, chunk);
+    }
+    return btoa(binary);
 }
 
-function extractQuoteDocument(html){
-    const parsed = new DOMParser().parseFromString(html, 'text/html');
-    const styleText = Array.from(parsed.querySelectorAll('style')).map(style => style.textContent).join('\n');
-    const quoteEl = parsed.querySelector('.quote');
-    return { styleText, quoteHtml: quoteEl ? quoteEl.outerHTML : '' };
+function loadQuotePdfFont(){
+    if(!quotePdfFontPromise){
+        quotePdfFontPromise = fetch(QUOTE_PDF_FONT_URL)
+            .then(response => {
+                if(!response.ok) throw new Error('中文字型載入失敗，請確認網路後重新點選申請估價單');
+                return response.arrayBuffer();
+            })
+            .then(arrayBufferToBase64);
+    }
+    return quotePdfFontPromise;
 }
 
-function downloadQuotePdf(html, filename){
-    return new Promise((resolve, reject) => {
-        if(!window.html2pdf){
-            reject(new Error('PDF 套件尚未載入完成，請確認網路後重新點選申請估價單'));
-            return;
-        }
-        const quoteDoc = extractQuoteDocument(html);
-        if(!quoteDoc.quoteHtml){
-            reject(new Error('估價單內容產生失敗，請重新操作一次'));
-            return;
-        }
+function quoteMoneyText(value){
+    return `NT$ ${Math.round(value).toLocaleString('zh-TW')}`;
+}
 
-        const host = document.createElement('div');
-        host.style.position = 'fixed';
-        host.style.left = '0';
-        host.style.top = '0';
-        host.style.width = '700px';
-        host.style.minHeight = '990px';
-        host.style.background = '#ffffff';
-        host.style.opacity = '0.01';
-        host.style.pointerEvents = 'none';
-        host.style.zIndex = '-1';
-        host.innerHTML = `<style>${quoteDoc.styleText}</style>${quoteDoc.quoteHtml}`;
-        document.body.appendChild(host);
+function addQuoteFont(doc, fontBase64){
+    doc.addFileToVFS('jf-openhuninn-2.1.ttf', fontBase64);
+    doc.addFont('jf-openhuninn-2.1.ttf', 'JfOpenHuninn', 'normal');
+    doc.setFont('JfOpenHuninn', 'normal');
+}
 
-        const quoteEl = host.querySelector('.quote');
-        quoteEl.style.maxWidth = 'none';
-        quoteEl.style.width = '700px';
-        quoteEl.style.boxSizing = 'border-box';
+function buildQuoteInfoRows(data){
+    const rows = [];
+    if(isUrgentSelected()) rows.push(['施工日期', getUrgentDeadlineText(), '', '']);
+    rows.push(['公司統編', data.taxId, '公司抬頭', data.companyName]);
+    rows.push(['聯絡人姓名', data.contactName, '聯絡人電話', data.contactPhone]);
+    if(data.contactPhoneAlt) rows.push(['備用聯絡電話', data.contactPhoneAlt, '', '']);
+    rows.push([
+        { content: '施工地點', styles: { textColor: [100, 100, 100] } },
+        { content: `${data.city} ${data.district} ${data.detailAddress}`, colSpan: 3, styles: { halign: 'left' } }
+    ]);
+    return rows;
+}
 
-        setTimeout(() => {
-            const options = {
-                margin: [8, 8, 8, 8],
-                filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    windowWidth: 700,
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css', 'legacy'] }
-            };
-            window.html2pdf().set(options).from(quoteEl).save()
-                .then(() => {
-                    host.remove();
-                    resolve();
-                })
-                .catch(error => {
-                    host.remove();
-                    reject(error);
-                });
-        }, 300);
+function buildQuoteTableRows(quote){
+    const body = [];
+    quote.groups.forEach(group => {
+        body.push([
+            { content: `${group.label} 施工明細`, colSpan: 5, styles: { fillColor: [247, 244, 239], textColor: [30, 58, 95] } }
+        ]);
+        group.rows.forEach(row => {
+            body.push([
+                row.label,
+                String(row.q),
+                row.unit,
+                quoteMoneyText(row.up),
+                quoteMoneyText(row.q * row.up)
+            ]);
+        });
     });
+    body.push([
+        { content: '施工項目小計', colSpan: 4, styles: { halign: 'right' } },
+        quoteMoneyText(quote.itemSubtotal)
+    ]);
+    if(quote.itemSubtotal < quote.baseFee){
+        body.push([
+            { content: '基本出車費計收', colSpan: 4, styles: { halign: 'right' } },
+            quoteMoneyText(quote.baseFee)
+        ]);
+    }
+    if(quote.urgentFee > 0){
+        body.push([
+            { content: '急件加收費', colSpan: 4, styles: { halign: 'right' } },
+            quoteMoneyText(quote.urgentFee)
+        ]);
+    }
+    body.push([
+        { content: '未稅總額', colSpan: 4, styles: { halign: 'right', fontSize: 11 } },
+        { content: quoteMoneyText(quote.untaxedTotal), styles: { fontSize: 11 } }
+    ]);
+    body.push([
+        { content: '含稅總額', colSpan: 4, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
+        { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
+    ]);
+    return body;
+}
+
+async function downloadQuotePdf(data, quote, filename){
+    const jsPdfApi = window.jspdf && window.jspdf.jsPDF;
+    if(!jsPdfApi){
+        throw new Error('PDF 套件尚未載入完成，請確認網路後重新點選申請估價單');
+    }
+
+    const fontBase64 = await loadQuotePdfFont();
+    const doc = new jsPdfApi({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    if(typeof doc.autoTable !== 'function'){
+        throw new Error('PDF 表格套件尚未載入完成，請確認網路後重新點選申請估價單');
+    }
+    addQuoteFont(doc, fontBase64);
+
+    const marginX = 14;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const tableWidth = pageWidth - marginX * 2;
+
+    doc.setTextColor(30, 58, 95);
+    doc.setFontSize(22);
+    doc.text('施工估價單', marginX, 18);
+
+    doc.setFontSize(13);
+    doc.text('客戶資料', marginX, 30);
+    doc.autoTable({
+        startY: 34,
+        body: buildQuoteInfoRows(data),
+        theme: 'grid',
+        margin: { left: marginX, right: marginX },
+        tableWidth,
+        styles: {
+            font: 'JfOpenHuninn',
+            fontStyle: 'normal',
+            fontSize: 10,
+            cellPadding: 2.4,
+            lineColor: [238, 238, 238],
+            lineWidth: 0.1,
+            textColor: [26, 26, 26],
+            overflow: 'linebreak'
+        },
+        columnStyles: {
+            0: { cellWidth: 28, textColor: [100, 100, 100] },
+            1: { cellWidth: 63, halign: 'right' },
+            2: { cellWidth: 28, textColor: [100, 100, 100] },
+            3: { cellWidth: 63, halign: 'right' }
+        }
+    });
+
+    const detailStartY = doc.lastAutoTable.finalY + 10;
+    doc.setTextColor(30, 58, 95);
+    doc.setFontSize(13);
+    doc.text('估價明細', marginX, detailStartY);
+    doc.autoTable({
+        startY: detailStartY + 4,
+        head: [['項目名稱', '數量', '單位', '單價', '金額']],
+        body: buildQuoteTableRows(quote),
+        theme: 'grid',
+        margin: { left: marginX, right: marginX },
+        tableWidth,
+        styles: {
+            font: 'JfOpenHuninn',
+            fontStyle: 'normal',
+            fontSize: 9,
+            cellPadding: 2.2,
+            lineColor: [224, 219, 211],
+            lineWidth: 0.1,
+            overflow: 'linebreak',
+            valign: 'middle'
+        },
+        headStyles: {
+            fillColor: [232, 238, 245],
+            textColor: [30, 58, 95],
+            fontStyle: 'normal'
+        },
+        columnStyles: {
+            0: { cellWidth: 67 },
+            1: { cellWidth: 18, halign: 'right' },
+            2: { cellWidth: 20 },
+            3: { cellWidth: 38, halign: 'right' },
+            4: { cellWidth: 39, halign: 'right' }
+        },
+        didParseCell: data => {
+            if(data.row.section === 'body' && data.column.index >= 3){
+                data.cell.styles.halign = 'right';
+            }
+        }
+    });
+
+    const pageCount = doc.internal.getNumberOfPages();
+    for(let page = 1; page <= pageCount; page += 1){
+        doc.setPage(page);
+        doc.setFont('JfOpenHuninn', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`${page} / ${pageCount}`, pageWidth - marginX, 290, { align: 'right' });
+    }
+
+    doc.save(filename);
 }
 
 async function downloadQuote(){
     const data = getContactData();
     if(!validateContactData(data)) return;
     const quote = getQuoteDetails();
-    const html = buildQuoteHtml(data, quote);
     const today = new Date();
     const stamp = `${today.getFullYear()}${pad2(today.getMonth()+1)}${pad2(today.getDate())}`;
     try{
-        await downloadQuotePdf(html, `施工估價單_${stamp}.pdf`);
+        await downloadQuotePdf(data, quote, `施工估價單_${stamp}.pdf`);
     }catch(error){
         alert(error && error.message ? error.message : 'PDF 產生失敗，請稍後再試');
     }
