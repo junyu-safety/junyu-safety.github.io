@@ -888,6 +888,53 @@ const remoteDistricts = {"基隆市": ["萬里區", "金山區", "平溪區", "�
 
 const catDefs = [{"key":"mirror","label":"反射鏡","tierBreaks":[3,10,20],"tierLabels":["3面以下","4–10面","11–20面","21面以上"],"unit":"面","items":[{"key":"sg60","label":"60公分","prices":[1800,1500,1300,1200]},{"key":"sg80","label":"80公分","prices":[1800,1500,1300,1200]},{"key":"sg100","label":"100公分","prices":[1800,1500,1300,1200]},{"key":"m-wall","label":"壁掛安裝","prices":[500,450,400,350]},{"key":"m-pole-clamp","label":"電線桿夾具安裝(含料)","prices":[500,450,400,350],"unit":"組"},{"key":"m-yas","label":"錏管+四方底座 (立)(含料)","prices":[2300,2100,2000,1950],"unit":"組"},{"key":"m-yab","label":"錏管(埋)(含料)","prices":[2300,2100,2000,1950],"unit":"組"},{"key":"m-gzs","label":"鍍鋅管+四方底座 (立)(含料)","prices":[2400,2300,2100,2000],"unit":"組"},{"key":"m-gzb","label":"鍍鋅管(埋)","prices":[2400,2300,2100,2000],"unit":"組"},{"key":"m-tape","label":"黃黑反光貼紙(含料)一米長","prices":[350,350,300,300],"unit":"米"},{"key":"m-clean","label":"反射鏡清運","prices":[450,450,450,450],"flat":true}]},{"key":"wheelstop","label":"車輪檔","tierBreaks":[50,200,1000],"tierLabels":["50顆以下","51–200顆","201–1000顆","1001顆以上"],"unit":"顆","items":[{"key":"ws-al","label":"鋁合金車輪檔","prices":[200,170,140,120]},{"key":"ws-pl","label":"塑膠車輪檔","prices":[200,170,140,120]},{"key":"ws-rb","label":"橡膠車輪擋","prices":[280,240,210,190]},{"key":"ws-pv","label":"PVC車輪檔","prices":[230,200,180,150]},{"key":"ws-remove","label":"車擋拆除","prices":[170,145,115,100]},{"key":"ws-recycle-pa","label":"舊車檔回收(塑膠、鋁合金、PVC)","prices":[60,60,60,60],"flat":true},{"key":"ws-recycle-rb","label":"舊車檔回收(橡膠)","prices":[150,150,150,150],"flat":true}]},{"key":"barrier","label":"防撞桿","tierBreaks":[50,150,300],"tierLabels":["50支以下","51–150支","151–300支","301支以上"],"unit":"支","items":[{"key":"br-pe","label":"PE防撞桿","prices":[220,190,150,130]},{"key":"br-ev","label":"EVA防撞桿","prices":[220,190,150,130]},{"key":"br-pu","label":"PU防撞桿","prices":[220,190,150,130]},{"key":"br-gd","label":"防護(管)桿","prices":[250,220,200,170]},{"key":"br-ch","label":"塑膠鍊條(含料)","prices":[160,155,150,150],"unit":"條"},{"key":"br-remove","label":"防撞(護)桿拆除","prices":[190,150,125,110]},{"key":"br-recycle","label":"防撞(護)桿清運","prices":[50,50,50,50],"flat":true},{"key":"br-tw","label":"台/100*30 U型護欄(含料)","prices":[1800,1700,1600,1500],"unit":"個"},{"key":"br-cn","label":"陸/100*30 U型護欄(含料)","prices":[1400,1350,1300,1250],"unit":"個"},{"key":"br-u-remove","label":"U型護欄拆除","prices":[400,300,280,240],"unit":"個"},{"key":"br-u-recycle","label":"U型護欄清運","prices":[70,70,70,70],"unit":"個","flat":true}]},{"key":"speedbump","label":"減速墊","tierBreaks":[15,50],"tierLabels":["15米以下","16–50米","51米以上"],"unit":"塊","items":[{"key":"sb-25","label":"橡膠/PVC 50*50*2.5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-35","label":"橡膠/PVC 50*50*3.5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-5","label":"橡膠/PVC 50*50*5CM","prices":[680,600,470],"meterFactor":0.5},{"key":"sb-remove","label":"拆除費用","prices":[500,470,430],"unit":"米","tierBreaks":[15,50]},{"key":"sb-clean","label":"清運費用","prices":[360,360,360],"unit":"米","flat":true}]},{"key":"edgeguard","label":"護邊條","tierBreaks":[50,150,1000],"tierLabels":["50條以下","51–150條","151–1000條","1001條以上"],"unit":"條","items":[{"key":"eg-pv","label":"PVC彩紋防撞條","prices":[200,160,130,100]},{"key":"eg-pu","label":"PU護邊條","prices":[200,160,130,100]},{"key":"eg-al","label":"螢光鋁邊條","prices":[200,160,130,100]},{"key":"eg-rb","label":"橡膠護邊條","prices":[200,160,130,100]},{"key":"eg-remove","label":"拆除費用","prices":[150,140,125,110]},{"key":"eg-clean","label":"清運費用","prices":[70,70,70,70],"flat":true}]}];
 
+const itemCodeMap = {
+  'sg60': '無',
+  'sg80': '無',
+  'sg100': '無',
+  'm-wall': 'ZH0206',
+  'm-pole-clamp': 'ZH0207',
+  'm-yas': 'ZH0204',
+  'm-yab': 'ZH0202',
+  'm-gzs': 'ZH0205',
+  'm-gzb': 'ZH0203',
+  'm-tape': 'ZH0215',
+  'm-clean': 'ZH0302',
+  'ws-al': 'ZH0201',
+  'ws-pl': 'ZH0201',
+  'ws-rb': 'ZH0201',
+  'ws-pv': 'ZH0201',
+  'ws-remove': 'ZH0101',
+  'ws-recycle-pa': 'ZH0301',
+  'ws-recycle-rb': 'ZH0301',
+  'br-pe': 'ZH0208',
+  'br-ev': 'ZH0208',
+  'br-pu': 'ZH0208',
+  'br-gd': 'ZH0209',
+  'br-ch': 'ZH0216',
+  'br-remove': 'ZH0103',
+  'br-recycle': 'ZH0303',
+  'br-tw': 'ZH0210',
+  'br-cn': 'ZH0210',
+  'br-u-remove': 'ZH0105',
+  'br-u-recycle': 'ZH0305',
+  'sb-25': 'ZH0211',
+  'sb-35': 'ZH0211',
+  'sb-5': 'ZH0211',
+  'sb-remove': 'ZH0106',
+  'sb-clean': 'ZH0306',
+  'eg-pv': 'ZH0212',
+  'eg-pu': 'ZH0212',
+  'eg-al': 'ZH0212',
+  'eg-rb': 'ZH0212',
+  'eg-remove': 'ZH0107',
+  'eg-clean': 'ZH0307'
+};
+const quoteFeeCodeMap = {
+  base: 'ZH0213',
+  urgent: 'ZH0214'
+};
+
 const qty = {};
 
 function pad2(n){ return String(n).padStart(2, '0'); }
@@ -955,6 +1002,11 @@ const productPreviewMap = {
     note: '壁掛安裝示意圖',
     image: './assets/images/mirror-wall-install.jpg'
   },
+  'm-pole-clamp': {
+    title: '電線桿夾具安裝(含料)',
+    note: '商品示意圖',
+    image: './assets/images/convex-mirror-utility-pole.png'
+  },
   'ws-al': { title: '鋁合金車輪檔', note: '商品示意圖', image: './assets/images/aluminum-alloy-wheel-stop.png' },
   'br-gd': { title: '防護(管)桿', note: '商品示意圖', image: './assets/images/double-rail-flexible-delineator.png' },
   'br-pe': { title: 'PE防撞桿', note: '商品示意圖', image: './assets/images/flexible-bollard.png' },
@@ -1013,13 +1065,13 @@ function getMirrorBreakdownItems(cat){
     if(sizeItem && sizeQty > 0){
       const sizeTier = getTier(getQtyForTier(sizeQty, sizeItem), sizeItem.tierBreaks || cat.tierBreaks);
       const sizeUnit = sizeItem.unit || cat.unit;
-      rows.push({ label: sizeItem.label, q: sizeQty, unit: sizeUnit, up: sizeItem.prices[sizeTier] });
+      rows.push({ code: itemCodeMap[sizeItem.key] || '', label: sizeItem.label, q: sizeQty, unit: sizeUnit, up: sizeItem.prices[sizeTier] });
       getMirrorInstallItems().forEach(method => {
         const methodKey = mirrorInstallQtyKey(sizeKey, method.key);
         const q = qty[methodKey] || 0;
         if(q > 0){
           const tier = method.flat ? 0 : getTier(getQtyForTier(q, method), method.tierBreaks || cat.tierBreaks);
-          rows.push({ label: `${sizeItem.label} - ${method.label}`, q, unit: method.unit || cat.unit, up: method.prices[tier] });
+          rows.push({ code: itemCodeMap[method.key] || '', label: `${sizeItem.label} - ${method.label}`, q, unit: method.unit || cat.unit, up: method.prices[tier] });
         }
       });
     }
@@ -1028,7 +1080,7 @@ function getMirrorBreakdownItems(cat){
     const q = qty[it.key] || 0;
     if(q > 0){
       const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
-      rows.push({ label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] });
+      rows.push({ code: itemCodeMap[it.key] || '', label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] });
     }
   });
   return rows;
@@ -1038,7 +1090,7 @@ function getSelectedBreakdownItems(cat){
   return cat.items.filter(it => (qty[it.key] || 0) > 0).map(it => {
     const q = qty[it.key];
     const tier = it.flat ? 0 : getTier(getQtyForTier(q, it), it.tierBreaks || cat.tierBreaks);
-    return { label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] };
+    return { code: itemCodeMap[it.key] || '', label: it.label, q, unit: it.unit || cat.unit, up: it.prices[tier] };
   });
 }
 function updateMirrorInstallUi(cat){
@@ -1617,10 +1669,11 @@ function buildQuoteTableRows(quote){
     const body = [];
     quote.groups.forEach(group => {
         body.push([
-            { content: `${group.label} 施工明細`, colSpan: 5, styles: { fillColor: [247, 244, 239], textColor: [30, 58, 95] } }
+            { content: `${group.label} 施工明細`, colSpan: 6, styles: { fillColor: [247, 244, 239], textColor: [30, 58, 95] } }
         ]);
         group.rows.forEach(row => {
             body.push([
+                row.code || '',
                 row.label,
                 String(row.q),
                 row.unit,
@@ -1630,27 +1683,29 @@ function buildQuoteTableRows(quote){
         });
     });
     body.push([
-        { content: '施工項目小計', colSpan: 4, styles: { halign: 'right' } },
+        { content: '施工項目小計', colSpan: 5, styles: { halign: 'right' } },
         quoteMoneyText(quote.itemSubtotal)
     ]);
     if(quote.itemSubtotal < quote.baseFee){
         body.push([
+            quoteFeeCodeMap.base,
             { content: '基本出車費計收', colSpan: 4, styles: { halign: 'right' } },
             quoteMoneyText(quote.baseFee)
         ]);
     }
     if(quote.urgentFee > 0){
         body.push([
+            quoteFeeCodeMap.urgent,
             { content: '急件加收費', colSpan: 4, styles: { halign: 'right' } },
             quoteMoneyText(quote.urgentFee)
         ]);
     }
     body.push([
-        { content: '未稅總額', colSpan: 4, styles: { halign: 'right', fontSize: 11 } },
+        { content: '未稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 11 } },
         { content: quoteMoneyText(quote.untaxedTotal), styles: { fontSize: 11 } }
     ]);
     body.push([
-        { content: '含稅總額', colSpan: 4, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
+        { content: '含稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
         { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
     ]);
     return body;
@@ -1709,7 +1764,7 @@ async function downloadQuotePdf(data, quote, filename){
     doc.text('估價明細', marginX, detailStartY);
     doc.autoTable({
         startY: detailStartY + 4,
-        head: [['項目名稱', '數量', '單位', '單價', '金額']],
+        head: [['料號', '項目名稱', '數量', '單位', '單價', '金額']],
         body: buildQuoteTableRows(quote),
         theme: 'grid',
         margin: { left: marginX, right: marginX },
@@ -1730,14 +1785,15 @@ async function downloadQuotePdf(data, quote, filename){
             fontStyle: 'normal'
         },
         columnStyles: {
-            0: { cellWidth: 67 },
-            1: { cellWidth: 18, halign: 'right' },
-            2: { cellWidth: 20 },
-            3: { cellWidth: 38, halign: 'right' },
-            4: { cellWidth: 39, halign: 'right' }
+            0: { cellWidth: 23 },
+            1: { cellWidth: 59 },
+            2: { cellWidth: 16, halign: 'right' },
+            3: { cellWidth: 17 },
+            4: { cellWidth: 33, halign: 'right' },
+            5: { cellWidth: 34, halign: 'right' }
         },
         didParseCell: data => {
-            if(data.row.section === 'body' && data.column.index >= 3){
+            if(data.row.section === 'body' && data.column.index >= 4){
                 data.cell.styles.halign = 'right';
             }
         }
