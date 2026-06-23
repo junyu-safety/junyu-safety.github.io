@@ -1039,6 +1039,25 @@ function getMirrorInstallItems(){
 function getMirrorInstallTotal(sizeKey){
   return getMirrorInstallItems().reduce((sum, it) => sum + (qty[mirrorInstallQtyKey(sizeKey, it.key)] || 0), 0);
 }
+function getMirrorInstallTier(sizeQty, method, cat){
+  return method.flat ? 0 : getTier(getQtyForTier(sizeQty, method), method.tierBreaks || cat.tierBreaks);
+}
+function hasDiscountPrice(it, tier){
+  return tier > 0 && it.prices[tier] < it.prices[0];
+}
+function getNextDiscountGap(q, it, cat){
+  const tierBreaks = it.tierBreaks || cat.tierBreaks;
+  const tierQty = getQtyForTier(q, it);
+  const currentTier = it.flat ? 0 : getTier(tierQty, tierBreaks);
+  const currentPrice = it.prices[currentTier];
+  for(let i = currentTier + 1; i < it.prices.length; i += 1){
+    if(it.prices[i] < currentPrice){
+      const threshold = tierBreaks[i - 1] + 1;
+      return Math.max(0, threshold - tierQty);
+    }
+  }
+  return 0;
+}
 function syncQtyInput(key){
   const inp = document.getElementById('inp-' + key);
   if(inp) inp.value = qty[key] || 0;
@@ -1071,7 +1090,7 @@ function getMirrorBreakdownItems(cat){
         const methodKey = mirrorInstallQtyKey(sizeKey, method.key);
         const q = qty[methodKey] || 0;
         if(q > 0){
-          const tier = method.flat ? 0 : getTier(getQtyForTier(q, method), method.tierBreaks || cat.tierBreaks);
+          const tier = getMirrorInstallTier(sizeQty, method, cat);
           rows.push({ code: itemCodeMap[method.key] || '', label: `${sizeItem.label} - ${method.label}`, q, unit: method.unit || cat.unit, up: method.prices[tier] });
         }
       });
@@ -1106,7 +1125,7 @@ function updateMirrorInstallUi(cat){
     getMirrorInstallItems().forEach(method => {
       const key = mirrorInstallQtyKey(sizeKey, method.key);
       const q = qty[key] || 0;
-      const tier = method.flat ? 0 : getTier(getQtyForTier(q, method), method.tierBreaks || cat.tierBreaks);
+      const tier = getMirrorInstallTier(sizeQty, method, cat);
       const up = method.prices[tier];
       const unit = method.unit || cat.unit;
       const upEl = document.getElementById('up-' + key);
@@ -1242,7 +1261,7 @@ function calcCat(cat) {
         total += sizeQty * sizeItem.prices[sizeTier];
         getMirrorInstallItems().forEach(method => {
           const methodQty = qty[mirrorInstallQtyKey(sizeKey, method.key)] || 0;
-          const tier = method.flat ? 0 : getTier(methodQty, method.tierBreaks || cat.tierBreaks);
+          const tier = getMirrorInstallTier(sizeQty, method, cat);
           total += methodQty * method.prices[tier];
         });
       }
@@ -1293,7 +1312,7 @@ function recalc() {
       const hintBox = document.getElementById('hint-' + it.key);
 
       if (upEl) {
-        if (q > 0 && tier > 0) {
+        if (q > 0 && hasDiscountPrice(it, tier)) {
           // 已達標：紅色單價 + 標籤
           upEl.innerHTML = `<span style="color:var(--urgent-red); font-weight:700;">NT$${up.toLocaleString('zh-TW')}</span> / ${unit} <span class="discount-tag">[已享優惠價]</span>`;
           if (hintBox) hintBox.innerText = "";
@@ -1302,8 +1321,7 @@ function recalc() {
           upEl.innerHTML = `NT$${it.prices[0].toLocaleString('zh-TW')} / ${unit}`;
           // 湊單提示 (只差 5 單位以內才顯示)
           if (hintBox) {
-            const tierBreaks = it.tierBreaks || cat.tierBreaks;
-            const gap = tierBreaks[0] + 1 - getQtyForTier(q, it);
+            const gap = getNextDiscountGap(q, it, cat);
             if (q > 0 && gap > 0 && gap <= 5 && !it.flat && !it.meterFactor) {
               hintBox.innerText = `再加 ${Math.ceil(gap)} ${unit}即享優惠價`;
             } else {
