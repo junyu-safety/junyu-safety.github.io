@@ -62,6 +62,13 @@
     color: rgba(255,255,255,0.6);
     letter-spacing: 1px;
   }
+  .brand-logo {
+    display: block;
+    width: min(390px, 72vw);
+    height: auto;
+    margin: 0 auto 18px;
+    filter: brightness(0) invert(1);
+  }
 
   .container {
     max-width: 740px;
@@ -365,6 +372,16 @@
     flex-shrink: 0;
   }
   .cat-body { display: none; border-top: 1px solid var(--rule); }
+  .product-reminder {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
 
   .tier-bar {
     padding: 8px 16px;
@@ -608,6 +625,31 @@
     gap: 16px;
   }
   .form-field.full { grid-column: 1 / -1; }
+  .choice-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .choice-option {
+    min-width: 110px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .choice-option input { width: auto; accent-color: var(--accent); }
+  .download-status {
+    align-self: center;
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
   .form-field label {
     display: block;
     margin-bottom: 7px;
@@ -626,6 +668,12 @@
     font-family: 'Noto Sans TC', sans-serif;
   }
   .form-field input:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .form-field .choice-option input {
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
   .selected-site-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -696,7 +744,7 @@
     .contact-grid { grid-template-columns: 1fr; }
     .selected-site-grid { grid-template-columns: 1fr; }
     .next-actions, .form-actions { justify-content: stretch; }
-    .next-actions { flex-direction: column; gap: 10px; }
+    .next-actions, .form-actions { flex-direction: column; gap: 10px; }
     .flow-hint { margin-right: 0; }
     .primary-btn, .secondary-btn { width: 100%; }
   }
@@ -707,8 +755,7 @@
 <body>
 
 <div class="page-header">
-  <img src="價目表用LOGO.svg" alt="竣宇道安科技有限公司" 
-     style="display: block; margin: 10px auto; height: 60px; filter: brightness(0) invert(1);">
+  <img class="brand-logo" src="./價目表用LOGO.svg" alt="竣宇道安科技有限公司">
   
   <h1>安裝施工費用試算表</h1>
   <p>依序選擇施工縣市與商品數量，即時顯示預估費用</p>
@@ -803,6 +850,7 @@
       <span class="label">Step 2 &nbsp;·&nbsp; 施工商品與數量</span>
     </div>
     <div class="card-body" style="padding: 12px;">
+      <div class="product-reminder">提醒：安裝服務不包含舊有品項拆除及清運(回收)，如有需要請另行勾選。</div>
       <div id="catContainer"></div>
     </div>
   </div>
@@ -827,7 +875,21 @@
     </div>
     <div class="card-body">
       <div class="contact-grid">
-        <div class="form-field">
+        <div class="form-field full">
+          <label>是否開立發票?</label>
+          <div class="choice-row">
+            <label class="choice-option"><input type="radio" name="invoiceNeeded" value="yes" checked onchange="updateInvoiceFields()">是</label>
+            <label class="choice-option"><input type="radio" name="invoiceNeeded" value="no" onchange="updateInvoiceFields()">否</label>
+          </div>
+        </div>
+        <div class="form-field full" id="taxOptionField">
+          <label>是否需要統編?</label>
+          <div class="choice-row">
+            <label class="choice-option"><input type="radio" name="taxIdNeeded" value="yes" checked onchange="updateInvoiceFields()">是</label>
+            <label class="choice-option"><input type="radio" name="taxIdNeeded" value="no" onchange="updateInvoiceFields()">否</label>
+          </div>
+        </div>
+        <div class="form-field" id="taxIdField">
           <label for="taxId">公司統編</label>
           <input id="taxId" type="text" inputmode="numeric" autocomplete="off" maxlength="8" pattern="[0-9]{8}">
         </div>
@@ -858,7 +920,8 @@
       </div>
       <div class="form-actions">
         <button class="secondary-btn" type="button" onclick="showQuoteStep()">返回</button>
-        <button class="primary-btn" type="button" onclick="downloadQuote()">申請估價單</button>
+        <div class="download-status" id="downloadStatus" aria-live="polite"></div>
+        <button class="primary-btn" id="quoteDownloadBtn" type="button" onclick="downloadQuote()">申請估價單</button>
       </div>
     </div>
   </div>
@@ -1568,10 +1631,34 @@ function escapeHtml(value){
     }[ch]));
 }
 
+function isInvoiceNeeded(){
+    const checked = document.querySelector('input[name="invoiceNeeded"]:checked');
+    return !checked || checked.value === 'yes';
+}
+function isTaxIdNeeded(){
+    if(!isInvoiceNeeded()) return false;
+    const checked = document.querySelector('input[name="taxIdNeeded"]:checked');
+    return !checked || checked.value === 'yes';
+}
+function updateInvoiceFields(){
+    const invoiceNeeded = isInvoiceNeeded();
+    const taxIdNeeded = isTaxIdNeeded();
+    const taxOptionField = document.getElementById('taxOptionField');
+    const taxIdField = document.getElementById('taxIdField');
+    const taxIdInput = document.getElementById('taxId');
+    if(taxOptionField) taxOptionField.style.display = invoiceNeeded ? 'block' : 'none';
+    if(taxIdField) taxIdField.style.display = taxIdNeeded ? 'block' : 'none';
+    if(taxIdInput) taxIdInput.required = taxIdNeeded;
+}
+
 function getContactData(){
     const cityKey=document.getElementById('citySelect').value;
     const districtKey=document.getElementById('districtSelect').value;
+    const invoiceNeeded = isInvoiceNeeded();
+    const taxIdNeeded = isTaxIdNeeded();
     return {
+        invoiceNeeded,
+        taxIdNeeded,
         taxId: document.getElementById('taxId').value.trim(),
         companyName: document.getElementById('companyName').value.trim(),
         contactName: document.getElementById('contactName').value.trim(),
@@ -1585,7 +1672,6 @@ function getContactData(){
 
 function validateContactData(data){
     const required = [
-        ['taxId', '公司統編'],
         ['companyName', '公司抬頭'],
         ['contactName', '聯絡人姓名'],
         ['contactPhone', '聯絡人電話'],
@@ -1599,7 +1685,7 @@ function validateContactData(data){
         if(target) target.focus();
         return false;
     }
-    if(!/^\d{8}$/.test(data.taxId)){
+    if(data.taxIdNeeded && !/^\d{8}$/.test(data.taxId)){
         alert('公司統編需輸入剛好8個數字');
         const target = document.getElementById('taxId');
         if(target) target.focus();
@@ -1608,7 +1694,7 @@ function validateContactData(data){
     return true;
 }
 
-function getQuoteDetails(){
+function getQuoteDetails(invoiceNeeded = true){
     const city = getSelectedFee();
     const baseFee = city ? city.base : 0;
     let itemSubtotal = 0;
@@ -1631,6 +1717,7 @@ function getQuoteDetails(){
         serviceTotal,
         urgentFee,
         untaxedTotal,
+        invoiceNeeded,
         taxedTotal: Math.round(untaxedTotal * 1.05),
         groups
     };
@@ -1674,7 +1761,9 @@ function addQuoteFont(doc, fontBase64){
 function buildQuoteInfoRows(data){
     const rows = [];
     if(isUrgentSelected()) rows.push(['施工日期', getUrgentDeadlineText(), '', '']);
-    rows.push(['公司統編', data.taxId, '公司抬頭', data.companyName]);
+    rows.push(['開立發票', data.invoiceNeeded ? '是' : '否', '是否需要統編', data.taxIdNeeded ? '是' : '否']);
+    if(data.taxIdNeeded) rows.push(['公司統編', data.taxId, '公司抬頭', data.companyName]);
+    else rows.push(['公司抬頭', data.companyName, '', '']);
     rows.push(['聯絡人姓名', data.contactName, '聯絡人電話', data.contactPhone]);
     if(data.contactPhoneAlt) rows.push(['備用聯絡電話', data.contactPhoneAlt, '', '']);
     rows.push([
@@ -1723,10 +1812,12 @@ function buildQuoteTableRows(quote){
         { content: '未稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 11 } },
         { content: quoteMoneyText(quote.untaxedTotal), styles: { fontSize: 11 } }
     ]);
-    body.push([
-        { content: '含稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
-        { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
-    ]);
+    if(quote.invoiceNeeded){
+        body.push([
+            { content: '含稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
+            { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
+        ]);
+    }
     return body;
 }
 
@@ -1833,13 +1924,28 @@ async function downloadQuotePdf(data, quote, filename){
 async function downloadQuote(){
     const data = getContactData();
     if(!validateContactData(data)) return;
-    const quote = getQuoteDetails();
+    const quote = getQuoteDetails(data.invoiceNeeded);
     const today = new Date();
     const stamp = `${today.getFullYear()}${pad2(today.getMonth()+1)}${pad2(today.getDate())}`;
+    const btn = document.getElementById('quoteDownloadBtn');
+    const status = document.getElementById('downloadStatus');
+    const originalText = btn ? btn.textContent : '';
+    if(btn){
+        btn.disabled = true;
+        btn.textContent = '產生中…';
+    }
+    if(status) status.textContent = '估價單產生中，請稍候…';
     try{
         await downloadQuotePdf(data, quote, `施工估價單_${stamp}.pdf`);
+        if(status) status.textContent = '';
     }catch(error){
+        if(status) status.textContent = 'PDF 產生失敗，請重新點選。';
         alert(error && error.message ? error.message : 'PDF 產生失敗，請稍後再試');
+    }finally{
+        if(btn){
+            btn.disabled = false;
+            btn.textContent = originalText || '申請估價單';
+        }
     }
 }
 
@@ -1869,105 +1975,4 @@ function showQuoteStep(){
     if(checkRemote()) return;
     const locationCard=document.getElementById('locationCard');
     const productCard=document.getElementById('productCard');
-    const summaryCard=document.getElementById('summaryCard');
-    const nextActions=document.getElementById('nextActions');
-    const contactCard=document.getElementById('contactCard');
-    if(locationCard) locationCard.style.display='block';
-    if(productCard) productCard.style.display='block';
-    if(summaryCard) summaryCard.style.display='block';
-    if(nextActions) nextActions.style.display='flex';
-    if(contactCard) contactCard.style.display='none';
-    recalc();
-    if(summaryCard) summaryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function checkRemote(){
-    const isRemote = isRemoteArea();
-    setRemoteMode(isRemote);
-    return isRemote;
-}
-
-const sel=document.getElementById('citySelect');
-Object.keys(cityData).forEach(c=>{
-  const o=document.createElement('option');
-  o.value=c; o.textContent=c;
-  sel.appendChild(o);
-});
-
-const container=document.getElementById('catContainer');
-catDefs.forEach(cat=>{
-  const section=document.createElement('div');
-  section.className='cat-block';
-
-  const hdr=document.createElement('div');
-  hdr.className='cat-hdr';
-  hdr.id='cathdr-'+cat.key;
-  hdr.onclick=()=>toggleCat(cat.key);
-  hdr.innerHTML=`
-    <div class="cat-icon"></div>
-    <div class="cat-name">${cat.label}</div>
-    <div class="cat-subtotal" id="catsubtotal-${cat.key}"></div>
-    <div class="cat-arrow" id="arrow-${cat.key}">&#9658;</div>
-  `;
-  section.appendChild(hdr);
-
-  const body=document.createElement('div');
-  body.className='cat-body';
-  body.id='catbody-'+cat.key;
-
-  const tierBar=document.createElement('div');
-  tierBar.className='tier-bar';
-  tierBar.innerHTML=`<span style="color:var(--ink-light)">費率分級：</span>`+
-    cat.tierLabels.map((l,i)=>`<span class="tier-tag" id="tier-tag-${cat.key}-${i}">${l}</span>`).join('');
-  body.appendChild(tierBar);
-
-  function appendItemRow(target, it, keyOverride, className){
-    const key = keyOverride || it.key;
-    const unit=it.unit||cat.unit;
-    const row=document.createElement('div');
-    row.className=className || 'item-row';
-    row.innerHTML=`
-      <div class="item-info">
-        <div class="item-name" title="${it.label}"><span>${it.label}</span>${getProductPreviewControl(key)}</div>
-        <div class="item-unit-price" id="up-${key}">NT$— / ${unit}</div>
-        <div id="hint-${key}" class="hint-tag"></div>
-      </div>
-      <div class="qty-wrap">
-        <button class="qty-btn" onclick="changeQty('${key}',-1)">−</button>
-        <input class="qty-inp" id="inp-${key}" type="number" min="0" value="0"
-          oninput="inputQty('${key}',this.value)" onchange="inputQty('${key}',this.value)">
-        <button class="qty-btn" onclick="changeQty('${key}',1)">+</button>
-      </div>
-      <div class="item-sub" id="sub-${key}"></div>
-    `;
-    target.appendChild(row);
-  }
-
-  if(cat.key === 'mirror'){
-    const mirrorInstallItems = cat.items.filter(it => mirrorInstallKeys.includes(it.key));
-    cat.items.filter(it => mirrorSizeKeys.includes(it.key)).forEach(sizeItem => {
-      appendItemRow(body, sizeItem);
-      const group=document.createElement('div');
-      group.className='mirror-install-group';
-      group.id='mirror-install-group-' + sizeItem.key;
-      group.innerHTML=`<div class="mirror-install-title">
-        <span>${sizeItem.label} 安裝方式</span>
-        <span class="mirror-install-status" id="mirror-install-status-${sizeItem.key}"></span>
-      </div>`;
-      mirrorInstallItems.forEach(method => appendItemRow(group, method, mirrorInstallQtyKey(sizeItem.key, method.key), 'item-row mirror-install-row'));
-      body.appendChild(group);
-    });
-    cat.items.filter(it => !mirrorSizeKeys.includes(it.key) && !mirrorInstallKeys.includes(it.key)).forEach(it=>appendItemRow(body, it));
-  } else {
-    cat.items.forEach(it=>appendItemRow(body, it));
-  }
-
-  section.appendChild(body);
-  container.appendChild(section);
-});
-
-updateFlowLocks(false);
-recalc();
-</script>
-</body>
-</html>
+    const summaryCard=document.getEle
