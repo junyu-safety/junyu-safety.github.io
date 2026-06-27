@@ -893,7 +893,7 @@
           <label for="taxId">公司統編</label>
           <input id="taxId" type="text" inputmode="numeric" autocomplete="off" maxlength="8" pattern="[0-9]{8}">
         </div>
-        <div class="form-field">
+        <div class="form-field" id="companyNameField">
           <label for="companyName">公司抬頭</label>
           <input id="companyName" type="text" autocomplete="organization">
         </div>
@@ -1645,10 +1645,14 @@ function updateInvoiceFields(){
     const taxIdNeeded = isTaxIdNeeded();
     const taxOptionField = document.getElementById('taxOptionField');
     const taxIdField = document.getElementById('taxIdField');
+    const companyNameField = document.getElementById('companyNameField');
     const taxIdInput = document.getElementById('taxId');
+    const companyNameInput = document.getElementById('companyName');
     if(taxOptionField) taxOptionField.style.display = invoiceNeeded ? 'block' : 'none';
     if(taxIdField) taxIdField.style.display = taxIdNeeded ? 'block' : 'none';
+    if(companyNameField) companyNameField.style.display = taxIdNeeded ? 'block' : 'none';
     if(taxIdInput) taxIdInput.required = taxIdNeeded;
+    if(companyNameInput) companyNameInput.required = taxIdNeeded;
 }
 
 function getContactData(){
@@ -1672,11 +1676,11 @@ function getContactData(){
 
 function validateContactData(data){
     const required = [
-        ['companyName', '公司抬頭'],
         ['contactName', '聯絡人姓名'],
         ['contactPhone', '聯絡人電話'],
         ['detailAddress', '詳細地址']
     ];
+    if(data.taxIdNeeded) required.unshift(['companyName', '公司抬頭']);
     const missing = required.find(([key]) => !data[key]);
     if(missing){
         alert(`請填寫${missing[1]}`);
@@ -1763,7 +1767,6 @@ function buildQuoteInfoRows(data){
     if(isUrgentSelected()) rows.push(['施工日期', getUrgentDeadlineText(), '', '']);
     rows.push(['開立發票', data.invoiceNeeded ? '是' : '否', '是否需要統編', data.taxIdNeeded ? '是' : '否']);
     if(data.taxIdNeeded) rows.push(['公司統編', data.taxId, '公司抬頭', data.companyName]);
-    else rows.push(['公司抬頭', data.companyName, '', '']);
     rows.push(['聯絡人姓名', data.contactName, '聯絡人電話', data.contactPhone]);
     if(data.contactPhoneAlt) rows.push(['備用聯絡電話', data.contactPhoneAlt, '', '']);
     rows.push([
