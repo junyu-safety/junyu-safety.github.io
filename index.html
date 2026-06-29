@@ -373,13 +373,15 @@
   }
   .cat-body { display: none; border-top: 1px solid var(--rule); }
   .product-reminder {
-    padding: 10px 12px;
+    padding: 12px 14px;
     margin-bottom: 12px;
-    border: 1px solid var(--rule);
+    border: 2px solid var(--warn);
+    border-left-width: 6px;
     border-radius: 4px;
-    background: var(--bg);
-    color: var(--ink-muted);
-    font-size: 12px;
+    background: #fff7ed;
+    color: var(--warn);
+    font-size: 13px;
+    font-weight: 700;
     line-height: 1.7;
   }
 
@@ -875,13 +877,6 @@
     </div>
     <div class="card-body">
       <div class="contact-grid">
-        <div class="form-field full">
-          <label>是否開立發票?</label>
-          <div class="choice-row">
-            <label class="choice-option"><input type="radio" name="invoiceNeeded" value="yes" checked onchange="updateInvoiceFields()">是</label>
-            <label class="choice-option"><input type="radio" name="invoiceNeeded" value="no" onchange="updateInvoiceFields()">否</label>
-          </div>
-        </div>
         <div class="form-field full" id="taxOptionField">
           <label>是否需要統編?</label>
           <div class="choice-row">
@@ -1631,24 +1626,16 @@ function escapeHtml(value){
     }[ch]));
 }
 
-function isInvoiceNeeded(){
-    const checked = document.querySelector('input[name="invoiceNeeded"]:checked');
-    return !checked || checked.value === 'yes';
-}
 function isTaxIdNeeded(){
-    if(!isInvoiceNeeded()) return false;
     const checked = document.querySelector('input[name="taxIdNeeded"]:checked');
     return !checked || checked.value === 'yes';
 }
 function updateInvoiceFields(){
-    const invoiceNeeded = isInvoiceNeeded();
     const taxIdNeeded = isTaxIdNeeded();
-    const taxOptionField = document.getElementById('taxOptionField');
     const taxIdField = document.getElementById('taxIdField');
     const companyNameField = document.getElementById('companyNameField');
     const taxIdInput = document.getElementById('taxId');
     const companyNameInput = document.getElementById('companyName');
-    if(taxOptionField) taxOptionField.style.display = invoiceNeeded ? 'block' : 'none';
     if(taxIdField) taxIdField.style.display = taxIdNeeded ? 'block' : 'none';
     if(companyNameField) companyNameField.style.display = taxIdNeeded ? 'block' : 'none';
     if(taxIdInput) taxIdInput.required = taxIdNeeded;
@@ -1658,10 +1645,8 @@ function updateInvoiceFields(){
 function getContactData(){
     const cityKey=document.getElementById('citySelect').value;
     const districtKey=document.getElementById('districtSelect').value;
-    const invoiceNeeded = isInvoiceNeeded();
     const taxIdNeeded = isTaxIdNeeded();
     return {
-        invoiceNeeded,
         taxIdNeeded,
         taxId: document.getElementById('taxId').value.trim(),
         companyName: document.getElementById('companyName').value.trim(),
@@ -1698,7 +1683,7 @@ function validateContactData(data){
     return true;
 }
 
-function getQuoteDetails(invoiceNeeded = true){
+function getQuoteDetails(){
     const city = getSelectedFee();
     const baseFee = city ? city.base : 0;
     let itemSubtotal = 0;
@@ -1721,7 +1706,6 @@ function getQuoteDetails(invoiceNeeded = true){
         serviceTotal,
         urgentFee,
         untaxedTotal,
-        invoiceNeeded,
         taxedTotal: Math.round(untaxedTotal * 1.05),
         groups
     };
@@ -1765,7 +1749,7 @@ function addQuoteFont(doc, fontBase64){
 function buildQuoteInfoRows(data){
     const rows = [];
     if(isUrgentSelected()) rows.push(['施工日期', getUrgentDeadlineText(), '', '']);
-    rows.push(['開立發票', data.invoiceNeeded ? '是' : '否', '是否需要統編', data.taxIdNeeded ? '是' : '否']);
+    rows.push(['是否需要統編', data.taxIdNeeded ? '是' : '否', '', '']);
     if(data.taxIdNeeded) rows.push(['公司統編', data.taxId, '公司抬頭', data.companyName]);
     rows.push(['聯絡人姓名', data.contactName, '聯絡人電話', data.contactPhone]);
     if(data.contactPhoneAlt) rows.push(['備用聯絡電話', data.contactPhoneAlt, '', '']);
@@ -1815,12 +1799,10 @@ function buildQuoteTableRows(quote){
         { content: '未稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 11 } },
         { content: quoteMoneyText(quote.untaxedTotal), styles: { fontSize: 11 } }
     ]);
-    if(quote.invoiceNeeded){
-        body.push([
-            { content: '含稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
-            { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
-        ]);
-    }
+    body.push([
+        { content: '含稅總額', colSpan: 5, styles: { halign: 'right', fontSize: 12, textColor: [30, 58, 95] } },
+        { content: quoteMoneyText(quote.taxedTotal), styles: { fontSize: 12, textColor: [30, 58, 95] } }
+    ]);
     return body;
 }
 
@@ -1927,7 +1909,7 @@ async function downloadQuotePdf(data, quote, filename){
 async function downloadQuote(){
     const data = getContactData();
     if(!validateContactData(data)) return;
-    const quote = getQuoteDetails(data.invoiceNeeded);
+    const quote = getQuoteDetails();
     const today = new Date();
     const stamp = `${today.getFullYear()}${pad2(today.getMonth()+1)}${pad2(today.getDate())}`;
     const btn = document.getElementById('quoteDownloadBtn');
