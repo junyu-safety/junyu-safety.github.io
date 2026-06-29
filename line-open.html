@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>開啟估價頁面</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", Arial, sans-serif;
+      background: #f4f1ec;
+      color: #1f2d3d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border: 1px solid #ddd6cc;
+      border-radius: 8px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      color: #1f4168;
+    }
+
+    p {
+      margin: 0 0 24px;
+      line-height: 1.7;
+      color: #666;
+      font-size: 15px;
+    }
+
+    button,
+    a {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 17px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button {
+      border: none;
+      background: #1f4168;
+      color: #fff;
+    }
+
+    a {
+      margin-top: 12px;
+      border: 1px solid #d8d0c4;
+      color: #1f4168;
+      background: #f8f6f2;
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #8a8a8a;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>開啟估價頁面</h1>
+    <p>為了順利下載施工估價單，請使用外部瀏覽器開啟網站。</p>
+
+    <button id="openBtn">開啟瀏覽器</button>
+    <a href="https://junyu-safety.github.io/">無法開啟時，請點此進入</a>
+
+    <div class="hint" id="hint">正在準備開啟頁面...</div>
+  </div>
+
+  <script>
+    const LIFF_ID = "2010549197-Wk8PZsRb";
+    const TARGET_URL = "https://junyu-safety.github.io/";
+
+    const openBtn = document.getElementById("openBtn");
+    const hint = document.getElementById("hint");
+
+    async function initLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        hint.textContent = "請點選按鈕，使用外部瀏覽器開啟估價頁面。";
+      } catch (error) {
+        hint.textContent = "若按鈕無法開啟，請使用下方連結進入估價頁面。";
+      }
+    }
+
+    openBtn.addEventListener("click", function () {
+      if (window.liff && liff.isInClient()) {
+        liff.openWindow({
+          url: TARGET_URL,
+          external: true
+        });
+      } else {
+        window.location.href = TARGET_URL;
+      }
+    });
+
+    initLiff();
+  </script>
+</body>
+</html>
