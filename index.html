@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
 <title>安裝施工費用試算表</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
+    color-scheme: light only;
     --ink: #1a1a1a;
     --ink-muted: #666;
     --ink-light: #999;
@@ -65,9 +67,12 @@
   .brand-logo {
     display: block;
     width: min(390px, 72vw);
-    height: auto;
+    aspect-ratio: 559.3 / 101.3;
     margin: 0 auto 18px;
-    filter: brightness(0) invert(1);
+    background: #fff;
+    -webkit-mask: url("./價目表用LOGO.svg") center / contain no-repeat;
+    mask: url("./價目表用LOGO.svg") center / contain no-repeat;
+    forced-color-adjust: none;
   }
 
   .container {
@@ -757,7 +762,7 @@
 <body>
 
 <div class="page-header">
-  <img class="brand-logo" src="./價目表用LOGO.svg" alt="竣宇道安科技有限公司">
+  <span class="brand-logo" role="img" aria-label="竣宇道安科技有限公司"></span>
   
   <h1>安裝施工費用試算表</h1>
   <p>依序選擇施工縣市與商品數量，即時顯示預估費用</p>
